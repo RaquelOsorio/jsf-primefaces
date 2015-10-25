@@ -1,0 +1,144 @@
+#popup_container {
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	min-width: 300px; /* Dialog will be no smaller than this */
+	max-width: 600px; /* Dialog will wrap after this width */
+	background: #FFF;
+	border: solid 5px #999;
+	color: #000;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+#popup_title {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 1.75em;
+	color: #666;
+	background: #CCC url(images/title.gif) top repeat-x;
+	border: solid 1px #FFF;
+	border-bottom: solid 1px #999;
+	cursor: default;
+	padding: 0em;
+	margin: 0em;
+}
+
+#popup_content {
+	background: 16px 16px no-repeat url(images/info.gif);
+	padding: 1em 1.75em;
+	margin: 0em;
+}
+
+#popup_content.alert {
+	background-image: url(images/info.gif);
+}
+
+#popup_content.confirm {
+	background-image: url(images/help.gif);
+}
+
+#popup_content.prompt {
+	background-image: url(images/help.gif);
+}
+
+#popup_content.message {
+	background-image: url(images/message-icon.png);
+}
+
+#popup_content.warning {
+	background-image: url(images/warning-icon.png);
+}
+
+#popup_content.error {
+	background-image: url(images/error-icon.png);
+}
+
+#popup_message {
+	padding-left: 48px;
+}
+
+#popup_panel {
+	text-align: center;
+	margin: 1em 0em 0em 1em;
+}
+
+#popup_prompt {
+	margin: .5em 0em;
+}
+
+.paginator{
+                float:right;
+            }
+            .paginator li {
+                float:left;
+                list-style: none;
+                text-align: center;
+            }
+            .paginator li a{
+                background: url("pagebox.png") no-repeat scroll 0 0 transparent;
+                display: block;
+                height: 31px;
+                margin-left: 3px;
+                margin-top: 0;
+                padding-top: 8px;
+                text-decoration: none;
+                width: 41px;
+            }
+            .paginator li a:hover{
+            }
+            .page-previous-outer{
+                border: 2px solid #4FB3DE;
+                height: 500px;
+                overflow: hidden;
+                position: relative;
+                width: 1500px;
+                margin-top: -5px;
+                padding-left: 25px;
+                border-radius: 5px;
+                background-color: white;
+            }
+            .page-previous-inner {
+                float:left;
+                position:relative;
+                background-color: white;
+            }
+            .page-previous-inner div{
+                width:1000px;
+                float:left;
+                position:relative;
+                background-color: white;
+            }	
+#arrow{
+                position:relative;
+                left:56px;
+            }
+            #conteiner{
+                width: 960px;
+                margin:0 auto;
+                background-color: white;
+            }
+            #wrapper h1{
+                color:navy;
+            }
+            body{
+                background-color: white;
+                margin:0;
+            }
+            #pag{
+                margin:0 auto;
+                padding-bottom: 10px;
+                width:500px;
+                position:relative;
+
+            }
+            .footer{
+                border: 1px solid navy;
+                margin: 100px auto 0 auto;
+                background-color: navy;
+            }
+            #wrapper{
+                margin-left:150px;
+                margin-right:150px;
+            }
