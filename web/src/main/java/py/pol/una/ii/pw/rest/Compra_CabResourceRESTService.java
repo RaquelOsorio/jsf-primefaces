@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
+import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
@@ -65,7 +66,7 @@ public class Compra_CabResourceRESTService {
     Compra_DetRegistration registrationdetalle;
 
 
-    
+    List <Compra_Det> listadetalle;
     /*@GET
     @Produces(MediaType.APPLICATION_JSON)*/
     public List<Compra_Cab> listAllCabeceras() {
@@ -100,7 +101,22 @@ public class Compra_CabResourceRESTService {
         
       
      }
-   
+    public Compra_Cab agregarCabecera(Proveedor proveedor){
+    	Compra_Cab newCabecera= new Compra_Cab();
+    	newCabecera.setProveedor(proveedor);
+    	newCabecera.setDetalleCompraList(listadetalle);
+    	return newCabecera;
+    	 
+     }
+    
+    public void agregarDetalle(Producto producto, int cantidad){
+    	Compra_Det newDetalle= new Compra_Det();
+    	newDetalle.setProducto(producto);
+    	newDetalle.setCantidad(cantidad);
+    	listadetalle.add(newDetalle);
+    	 
+     }
+    
 
 
     /*****************************Eliminar***********************************************/
