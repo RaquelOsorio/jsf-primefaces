@@ -56,7 +56,7 @@ import py.pol.una.ii.pw.service.ClienteRegistration;
 
 /*@Path("/clientes")
 @RequestScoped*/
-@ManagedBean(name="clientes")
+@ManagedBean(name="beanclientes")
 @ViewScoped
 public class ClienteResourceRESTService {
     

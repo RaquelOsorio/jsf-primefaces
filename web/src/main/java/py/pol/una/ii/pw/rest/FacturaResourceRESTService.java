@@ -14,9 +14,12 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -45,8 +48,8 @@ import py.pol.una.ii.pw.model.Proveedor;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.FacturaRegistration;
 
-@Path("/facturas")
-@RequestScoped
+@ManagedBean(name="beanfacturas")
+@ViewScoped
 public class FacturaResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp")

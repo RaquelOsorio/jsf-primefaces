@@ -44,7 +44,7 @@ import py.pol.una.ii.pw.service.Compra_DetRegistration;
 /*@Path("/cabeceras")
 @RequestScoped
 */
-@ManagedBean(name="beancabeceras")
+@ManagedBean(name="beancompras")
 @ViewScoped
 public class Compra_CabResourceRESTService {
 	@PersistenceContext(unitName="PersistenceApp") 

@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -55,8 +57,8 @@ import py.pol.una.ii.pw.service.ProductoRegistration;
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
-@Path("/productos")
-@RequestScoped
+@ManagedBean(name="beanproductos")
+@ViewScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)

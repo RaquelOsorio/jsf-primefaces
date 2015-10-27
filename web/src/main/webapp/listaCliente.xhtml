@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+		<h2><center>Lista de Clientes</center></h2>
+        <p:dataTable caseSensitiveSort="true"
+                                 emptyMessage="Ningun elemento encontrado" 
+                                 rowsPerPageLabel="Filas"
+                                 var="cli" value="#{beanclientes.listAllProveedores()}" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                 				 paginator="true" rows="10" style="margin-bottom:20px" 
+                 				 rowsPerPageTemplate="1,5,10" lazy="true">
+ 
+     		<p:column headerText="Id" sortBy="#{cli.id}" filterBy="#{cli.id}">
+       			 <h:outputText value="#{cli.id}" />
+    		</p:column>
+ 
+ 			<p:column headerText="Nombre" sortBy="#{cli.nombre}" filterBy="#{cli.nombre}">
+                 <h:outputText value="#{cli.nombre}"/>
+ 			</p:column>
+
+    		<p:column headerText="Apellido" sortBy="#{cli.apellido}" filterBy="#{cli.apellido}">
+        		<h:outputText value="#{cli.apellido}" />
+    		</p:column>
+    		<p:column headerText="Operacion">
+    			
+    			<p:commandButton action="#{cli.apellido}" value="Eliminar" image="ui-icon-trash"/>
+    			<p:commandButton action="#{cli.apellido}" value="Modificar" image="ui-icon-pencil"/>
+            </p:column>
+ 		</p:dataTable>
+ 				<p></p>
+    			<p:commandButton action="#{cli.apellido}" value="Crear" image="ui-icon-plusthick"/>
+<!-- 	<h1> Nuevo Cliente</h1>
+   		<h:form>
+           <p>Nombre</p>
+           <p><h:inputText value="#{nombre}"/></p>
+           <p>Apellido</p>
+           <p><h:inputText value="#{apellido}"/></p>
+           <p:commandButton value="Crear" actionListener='#{beanclientes.createCliente(nombre,apellido)}' update="tabla" />
+   		</h:form> -->
+
+	</ui:define>
+</ui:composition>

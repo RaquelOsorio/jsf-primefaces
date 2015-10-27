@@ -16,9 +16,12 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -48,10 +51,8 @@ import py.pol.una.ii.pw.model.Venta_Cab;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-@Path("/venta_Cab")
-@RequestScoped
-//@EJB
-
+@ManagedBean(name="beanventas")
+@ViewScoped
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 

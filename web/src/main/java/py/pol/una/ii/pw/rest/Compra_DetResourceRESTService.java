@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -49,7 +51,6 @@ import javax.ws.rs.core.MediaType;
 import py.pol.una.ii.pw.data.Compra_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
@@ -61,8 +62,8 @@ import py.pol.una.ii.pw.service.Compra_DetRegistration;
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
 
-@Path("/compras")
-@RequestScoped
+@ManagedBean(name="beancompradet")
+@ViewScoped
 public class Compra_DetResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
       //       type=PersistenceContextType.TRANSACTION)

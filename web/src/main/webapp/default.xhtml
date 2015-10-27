@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:p="http://primefaces.org/ui"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+   <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <title>#UNAnotecalles</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+
+    <link href="css/simple-sidebar.css" rel="stylesheet"/>
+</h:head>
+	    <h:outputStylesheet name="css/bootstrap.css" />
+        <h:outputScript library="js" name="jquery.js" />
+        <h:outputScript library="js" name="bootstrap.min.js" />
+	 
+	 
+	 
+<h:body>
+   <div id="wrapper">
+
+        
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <p></p>	     
+			        <p:growl id="messages" showDetail="false"/>
+				    <p:menu>
+				        <p:submenu label="Menu Principal">
+				            <p:menuitem value="Home" url="http://localhost:8080/EjbJaxRS-web/index.jsf" icon="ui-icon-home"/>
+				            <p:menuitem value="Cliente" outcome="/listaCliente.xhtml" icon="ui-icon-person"/>
+				            <p:menuitem value="Proveedor" outcome="/listaProveedor.xhtml" icon="ui-icon-person"/>
+				            <p:menuitem value="Producto" outcome="/listaProducto.xhtml" icon="ui-icon-star"/>
+				            <p:menuitem value="Compra" outcome="/listacompra.xhtml" icon="ui-icon-folder-open"/>
+				            <p:menuitem value="Venta" outcome="/listaventa.xhtml" icon="ui-icon-folder-open"/>				            
+				        </p:submenu>
+				    </p:menu>
+                </li>
+            </ul>
+        </div>
+        <div id="content">
+         	<ui:insert name="content">
+                    [Template content will be inserted here]
+         	</ui:insert>
+      	</div>
+       
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+	    				
+						</div>
+						</div>
+						</div>
+
+        </div>
+        
+
+    </div>
+    
+
+   
+    <script src="js/jquery.js"></script>
+
+    <script src="js/bootstrap.min.js"></script>
+
+
+
+   
+<!--     <script src="js/jquery.js"></script>
+
+    <script src="js/bootstrap.min.js"></script>
+ -->
+    
+</h:body>
+</html>
