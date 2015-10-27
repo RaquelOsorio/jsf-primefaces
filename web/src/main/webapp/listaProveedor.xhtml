@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+		<h2><center>Lista de Proveedores</center></h2>
+        <p:dataTable var="cli" value="#{beanproveedores.listAllProveedores()}">
+ 
+    		<p:column headerText="Id">
+       			 <h:outputText value="#{cli.id}" />
+    		</p:column>
+ 
+    		<p:column headerText="Descripcion">
+        		<h:outputText value="#{cli.descripcion}" />
+    		</p:column>
+ 
+    		<p:column headerText="Operacion">
+    			
+    			<p:commandButton action="#{cli.id}" value="Eliminar" image="ui-icon-trash"/>
+    			<p:commandButton action="#{cli.id}" value="Modificar" image="ui-icon-pencil"/>
+            </p:column>
+ 		</p:dataTable>
+ 				<p></p>
+    			<p:commandButton action="#{cli.id}" value="Crear" image="ui-icon-plusthick"/>
+
+
+	</ui:define>
+</ui:composition>

@@ -20,9 +20,12 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -45,7 +48,6 @@ import javax.ws.rs.core.Response;
 
 import py.pol.una.ii.pw.data.Venta_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
-
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.model.Venta_Det;
@@ -55,9 +57,8 @@ import py.pol.una.ii.pw.model.Venta_Det;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_DetRegistration;
 
-@Path("/venta_Det")
-@RequestScoped
-//@EJB
+@ManagedBean(name="beanventadet")
+@ViewScoped
 public class Venta_DetResourceRESTService {
 	@PersistenceContext(unitName="PersistenceApp")
 	private EntityManager em;

@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -62,8 +64,8 @@ import py.pol.una.ii.pw.service.ProveedorRegistration;
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
-@Path("/proveedores")
-@RequestScoped
+@ManagedBean(name="beanproveedores")
+@ViewScoped
 public class ProveedorResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
