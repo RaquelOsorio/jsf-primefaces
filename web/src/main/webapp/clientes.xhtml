@@ -48,10 +48,10 @@
  		<h1> Nuevo Cliente</h1>
    <h:form>
    		<p>Nombre</p>
-   		<p><h:inputText value="#{clienteCtrl.nombre}"/></p>
+   		<p><h:inputText value="#{nombre}"/></p>
    		<p>Apellido</p>
-   		<p><h:inputText value="#{clienteCtrl.apellido}"/></p>
-   		<p:commandButton value="Crear" actionListener='#{clienteCtrl.crear}' update="tabla" />
+   		<p><h:inputText value="#{apellido}"/></p>
+   		<p:commandButton value="Crear" actionListener='#{clientes.createCliente(nombre,apellido)}' update="tabla" />
    </h:form>
         
 

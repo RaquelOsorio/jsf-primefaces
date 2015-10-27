@@ -56,7 +56,7 @@ import py.pol.una.ii.pw.service.ClienteRegistration;
 
 /*@Path("/clientes")
 @RequestScoped*/
-@ManagedBean(name="clientes")
+@ManagedBean(name="beanclientes")
 @ViewScoped
 public class ClienteResourceRESTService {
     
@@ -103,7 +103,7 @@ public class ClienteResourceRESTService {
     @Path("/crear/{nombre}/{apellido}")
     
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createCliente(@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
+    public Response createCliente(String nombre, String apellido) {
     	Clientes cliente;
     	cliente= new Clientes();
     	cliente.setNombre(nombre);
