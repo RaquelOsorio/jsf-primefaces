@@ -24,6 +24,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
@@ -35,6 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.google.gson.annotations.Expose;
+
 @Entity
 @XmlRootElement
 @Table(name = "Producto")
@@ -43,7 +46,9 @@ public class Producto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator="my_seq")
+    @SequenceGenerator(name="my_seq",sequenceName="producto_id_seq", allocationSize=1)
+    @Expose
     private Long id;
 
     @NotNull

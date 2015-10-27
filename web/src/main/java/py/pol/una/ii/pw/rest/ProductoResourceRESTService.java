@@ -60,7 +60,7 @@ import py.pol.una.ii.pw.service.ProductoRegistration;
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
-	@Inject 
+	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em; 
 	
     @Inject

@@ -31,6 +31,7 @@ import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -53,11 +54,13 @@ import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.service.ClienteRegistration;
 
 
+/*@Path("/clientes")
+@RequestScoped*/
 @ManagedBean(name="clientes")
 @ViewScoped
 public class ClienteResourceRESTService {
     
-    @Inject
+	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
     
 	@Inject
@@ -72,7 +75,8 @@ public class ClienteResourceRESTService {
     @Inject
     ClienteRegistration registration;
 
-    
+   /* @GET
+    @Produces(MediaType.APPLICATION_JSON)*/
     public List<Clientes> listAllProveedores() {
         return repository.findAllOrderedByNombre();
     }

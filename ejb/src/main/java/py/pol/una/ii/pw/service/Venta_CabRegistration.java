@@ -7,14 +7,15 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import py.pol.una.ii.pw.data.Compra_DetRepository;
 import py.pol.una.ii.pw.data.Venta_DetRepository;
 import py.pol.una.ii.pw.model.Clientes;
-import py.pol.una.ii.pw.model.DetalleVenta;
+
 import py.pol.una.ii.pw.model.Venta_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
+
 import py.pol.una.ii.pw.model.Venta_Det;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ public class Venta_CabRegistration {
 	@Inject
     private Logger log;
 
-    @Inject
+	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
     
     @Inject
@@ -59,34 +60,33 @@ public class Venta_CabRegistration {
     }
     /**********************Registrar una venta**********************************************/
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void registrarVenta(Clientes cliente) throws Exception {
-    	 System.out.println("ENTRA EN AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    	 Venta_Cab cabecera= new Venta_Cab();
+    public void registrarVenta(Venta_Cab nuevacabecera) throws Exception {
+    	Venta_Cab cabecera= new Venta_Cab();
     	Date fecha = new Date();
     	cabecera.setFecha(fecha);
     	cabecera.setFactura(null);
-    	cabecera.setCliente(cliente);
+    	cabecera.setCliente(nuevacabecera.getCliente());
     	em.persist(cabecera);
     	 
-        List<DetalleVenta>  detalle= repository.findAllAuxiliaresOrderedByProducto();
+        List<Venta_Det>  detalle= nuevacabecera.getDetalleVenta();
         System.out.println("ENTRA EN COMPRAAAAAA"+ detalle.size());
         //int cantidad=detalle.size();
         
-        Iterator<DetalleVenta> it=null;
+        Iterator<Venta_Det> it=null;
         it= detalle.iterator();
         //System.out.println("ITERATOR"+it.next().getCantidad());
         
         while (it.hasNext())
         {	
-        	DetalleVenta aux = it.next();
+        	Venta_Det aux = it.next();
         	Venta_Det cdetalle= new Venta_Det();
         	cdetalle.setCabecera(cabecera);
         	cdetalle.setCantidad(aux.getCantidad());
         	cdetalle.setProducto(aux.getProducto());
         	detalleRegistration.register(cdetalle);
-        	DetalleVenta auxiliar= em.find(DetalleVenta.class, aux.getId());
-        	em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
-        	System.out.println("DETALLE cantidad"+aux.getCantidad());
+        	//DetalleVenta auxiliar= em.find(DetalleVenta.class, aux.getId());
+        	//em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
+        	//System.out.println("DETALLE cantidad"+aux.getCantidad());
         	//detalle.remove(it.next());
         	
         }

@@ -3,6 +3,7 @@ package py.pol.una.ii.pw.data;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -10,15 +11,14 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
-import py.pol.una.ii.pw.model.DetalleVenta;
+
 import py.pol.una.ii.pw.model.Venta_Det;
 
 
 @ApplicationScoped
 public class Venta_DetRepository {
 
-	@Inject
+	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
 
     public Venta_Det findById(Long id) {
@@ -61,13 +61,7 @@ public class Venta_DetRepository {
         return em.createQuery(criteria).getResultList();
     }
     
-    public List<DetalleVenta> findAllAuxiliaresOrderedByProducto() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<DetalleVenta> criteria = cb.createQuery(DetalleVenta.class);
-        Root<DetalleVenta> detalle = criteria.from(DetalleVenta.class);
-           criteria.select(detalle).orderBy(cb.asc(detalle.get("producto")));
-        return em.createQuery(criteria).getResultList();
-    }
+
     
     
     

@@ -34,6 +34,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -65,7 +66,7 @@ import py.pol.una.ii.pw.service.ProveedorRegistration;
 @RequestScoped
 public class ProveedorResourceRESTService {
     
-    @Inject
+	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
     
 	@Inject

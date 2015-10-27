@@ -29,6 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -42,15 +43,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.google.gson.annotations.Expose;
+
 @Entity
 @XmlRootElement
 @Table(name = "Compra_Cab")
 public class Compra_Cab implements Serializable {
-    /** Default value included to remove warning. Remove or modify at will. **/
+    
+
+	/** Default value included to remove warning. Remove or modify at will. **/
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator="my_seq")
+    @SequenceGenerator(name="my_seq",sequenceName="compra_cab_id_seq", allocationSize=1)
+    @Expose
     private Long id;
 
    // @NotNull
@@ -61,7 +68,19 @@ public class Compra_Cab implements Serializable {
     @JoinColumn(name="proveedor",referencedColumnName="id")
     @OneToOne
     private Proveedor proveedor;
+    
+    @JoinColumn(name="detalleCompraList",referencedColumnName="id")
+    @OneToMany
+    private List<Compra_Det> detalleCompraList;
 
+
+	public List<Compra_Det> getDetalleCompraList() {
+		return detalleCompraList;
+	}
+
+	public void setDetalleCompraList(List<Compra_Det> detalleCompraList) {
+		this.detalleCompraList = detalleCompraList;
+	}
 
 	public Proveedor getProveedor() {
 		return proveedor;
@@ -86,7 +105,19 @@ public class Compra_Cab implements Serializable {
 	public void setFecha(java.util.Date fecha) {
 		this.fecha = fecha;
 	}
+	public Compra_Cab(Long id, Date fecha, Proveedor proveedor,List<Compra_Det> detalleCompraList) {
+		super();
+		this.id = id;
+		this.fecha = fecha;
+		this.proveedor = proveedor;
+		this.detalleCompraList = detalleCompraList;
+	}
 
+	public Compra_Cab() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	/*public List<Compra_Det> getDetalle() {
 		return detalle;
 	}

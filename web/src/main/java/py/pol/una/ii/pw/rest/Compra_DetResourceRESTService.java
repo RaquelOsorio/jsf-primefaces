@@ -49,11 +49,11 @@ import javax.ws.rs.core.MediaType;
 import py.pol.una.ii.pw.data.Compra_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
+
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
-import py.pol.una.ii.pw.service.DetalleCompraRegistration;
+
 
 /**
  * JAX-RS Example
@@ -68,7 +68,7 @@ public class Compra_DetResourceRESTService {
       //       type=PersistenceContextType.TRANSACTION)
     
 	
-	@Inject
+	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
     
     @Inject
@@ -83,8 +83,7 @@ public class Compra_DetResourceRESTService {
     @Inject
     Compra_DetRegistration registration;
     
-    @Inject
-    DetalleCompraRegistration registrationaux;
+   
     /***************************Listar todo****************************************/	
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -93,16 +92,7 @@ public class Compra_DetResourceRESTService {
     	System.out.println("entra en listar	");
         return repository.findAllOrderedByProducto();
     }
-    /***************************Listar Auxiliares****************************************/	
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/auxiliares")
-    public List<DetalleCompra> listAllAux() {
-    	System.out.println("entra en listar	");
-        return repository.findAllAuxiliaresOrderedByProducto();
-    }
 
-    
     
     /***************************Busqueda por id***********************************/
     @GET
@@ -128,7 +118,7 @@ public class Compra_DetResourceRESTService {
      * or with a map of fields, and related errors.
      */
     
-    /****************************Crear*********************************************/
+    /****************************Crear*********************************************
     @POST
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

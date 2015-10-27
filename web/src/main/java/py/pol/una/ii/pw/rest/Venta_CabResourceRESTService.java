@@ -15,12 +15,14 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -52,7 +54,7 @@ import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
 public class Venta_CabResourceRESTService {
 
-	@Inject 
+	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
 	
 	@Inject
@@ -90,10 +92,10 @@ public class Venta_CabResourceRESTService {
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear/{cliente}")
-    public void create(@PathParam("cliente") Long cliente) {
+    public void create(Venta_Cab cab) {
         try {
-        	Clientes p= em.find(Clientes.class, cliente);
-			registration.registrarVenta(p);
+        	
+			registration.registrarVenta(cab);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -24,6 +24,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import javax.persistence.PersistenceContext;
+
 ///import javax.ws.rs.POST;
 ///import javax.ws.rs.PUT;
 import java.util.logging.Logger;
@@ -35,7 +37,7 @@ public class ProveedorRegistration {
     @Inject
     private Logger log;
 
-    @Inject
+    @PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
 
     @Inject

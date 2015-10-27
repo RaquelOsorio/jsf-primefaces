@@ -19,13 +19,13 @@ package py.pol.una.ii.pw.service;
 import py.pol.una.ii.pw.data.Compra_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
 import py.pol.una.ii.pw.model.Proveedor;
 
 import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -40,7 +40,7 @@ public class Compra_CabRegistration {
     @Inject
     private Logger log;
 
-    @Inject
+    @PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
 
     @Inject
@@ -70,33 +70,33 @@ public class Compra_CabRegistration {
     }
     /**********************Registrar una compra**********************************************/
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void registrarCompra(Proveedor proveedor) throws Exception {
+    public void registrarCompra(Compra_Cab nuevaCabecera) throws Exception {
      	Compra_Cab cabecera= new Compra_Cab();
     	Date fecha = new Date();
     	cabecera.setFecha(fecha);
-    	cabecera.setProveedor(proveedor);
+    	cabecera.setProveedor(nuevaCabecera.getProveedor());
     	em.persist(cabecera);
     	 
-        List<DetalleCompra>  detalle= repository.findAllAuxiliaresOrderedByProducto();
-        System.out.println("ENTRA EN COMPRAAAAAA"+ detalle.size());
+        List<Compra_Det>  detalle= nuevaCabecera.getDetalleCompraList();
+
         //int cantidad=detalle.size();
         
-        Iterator<DetalleCompra> it=null;
+        Iterator<Compra_Det> it=null;
         it=detalle.iterator();
         //System.out.println("ITERATOR"+it.next().getCantidad());
         
         while (it.hasNext())
         {	
         	
-        		DetalleCompra aux = it.next();
+        		Compra_Det aux = it.next();
         		Compra_Det cdetalle= new Compra_Det();
         		cdetalle.setCabecera(cabecera);
         		cdetalle.setCantidad(aux.getCantidad());
         		cdetalle.setProducto(aux.getProducto());
         		detalleRegistration.register(cdetalle);
-        		DetalleCompra auxiliar= em.find(DetalleCompra.class, aux.getId());
-        		em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
-        		System.out.println("DETALLE cantidad"+aux.getCantidad());
+        		//DetalleCompra auxiliar= em.find(DetalleCompra.class, aux.getId());
+        		//em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
+        		//System.out.println("DETALLE cantidad"+aux.getCantidad());
         		//detalle.remove(it.next());
         	
         	

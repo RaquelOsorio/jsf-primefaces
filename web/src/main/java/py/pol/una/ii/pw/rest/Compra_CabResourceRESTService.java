@@ -1,19 +1,4 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package py.pol.una.ii.pw.rest;
 
 import java.util.ArrayList;
@@ -26,9 +11,12 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -47,21 +35,18 @@ import javax.ws.rs.core.Response;
 import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
 
-/**
- * JAX-RS Example
- * <p/>
- * This class produces a RESTful service to read/write the contents of the productos table.
- */
-@Path("/cabeceras")
-@RequestScoped
 
+/*@Path("/cabeceras")
+@RequestScoped
+*/
+@ManagedBean(name="beancabeceras")
+@ViewScoped
 public class Compra_CabResourceRESTService {
-	@Inject 
+	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
 	
     @Inject
@@ -81,15 +66,15 @@ public class Compra_CabResourceRESTService {
 
 
     
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    /*@GET
+    @Produces(MediaType.APPLICATION_JSON)*/
     public List<Compra_Cab> listAllCabeceras() {
         return repository.findAllOrderedByFecha();
     }
 
-    @GET
+    /*@GET
     @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)*/
     public Compra_Cab lookupProductoById(@PathParam("id") long id) {
         Compra_Cab cabecera = repository.findById(id);
         if (cabecera == null) {
@@ -100,14 +85,14 @@ public class Compra_CabResourceRESTService {
 
     /****************************Crear Compras********************************************/
     
-    @POST
+    /*@POST
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/crear/{proveedor}")
-    public void create(@PathParam("proveedor") Long proveedor) {
+    @Path("/crear/{proveedor}")*/
+    public void create(Compra_Cab compra) {
         try {
-        	Proveedor p= em.find(Proveedor.class, proveedor);
-			registration.registrarCompra(p);
+        	
+			registration.registrarCompra(compra);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

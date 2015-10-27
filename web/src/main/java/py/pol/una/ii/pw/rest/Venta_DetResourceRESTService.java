@@ -19,12 +19,14 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -43,13 +45,11 @@ import javax.ws.rs.core.Response;
 
 import py.pol.una.ii.pw.data.Venta_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
-import py.pol.una.ii.pw.model.DetalleVenta;
+
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.model.Venta_Det;
-import py.pol.una.ii.pw.service.DetalleCompraRegistration;
-import py.pol.una.ii.pw.service.DetalleVentaRegistration;
+
 //import javax.ejb.EJBTransactionRolledbackException;
 //import javax.ejb.EJB;
 //import javax.ejb.EJBTransactionRolledbackException;
@@ -59,7 +59,7 @@ import py.pol.una.ii.pw.service.Venta_DetRegistration;
 @RequestScoped
 //@EJB
 public class Venta_DetResourceRESTService {
-	@Inject
+	@PersistenceContext(unitName="PersistenceApp")
 	private EntityManager em;
 
 	@Inject
@@ -75,8 +75,7 @@ public class Venta_DetResourceRESTService {
     Venta_DetRegistration registration;
 
     
-    @Inject
-    DetalleVentaRegistration registrationaux;
+
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -94,15 +93,8 @@ public class Venta_DetResourceRESTService {
         }
         return venta_Det;
     }
-    
-    /***************************Listar Auxiliares****************************************/	
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/auxiliares")
-    public List<DetalleVenta> listAllAux() {
-    	System.out.println("entra en listar	");
-        return repository.findAllAuxiliaresOrderedByProducto();
-    }
+
+
     /****************************Listar por cabecera******************************/
     @GET
     @Path("/listar/{cab:[0-9][0-9]*}")
@@ -111,7 +103,7 @@ public class Venta_DetResourceRESTService {
         return repository.findAllByCabecera(idcab);
     }
 
-    /****************************Crear*********************************************/
+    /****************************Crear*********************************************
     @POST
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
