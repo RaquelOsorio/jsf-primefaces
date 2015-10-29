@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
@@ -53,6 +54,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
+import org.primefaces.model.filter.*;
 import py.pol.una.ii.pw.data.ProveedorRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Page;
@@ -66,7 +70,7 @@ import py.pol.una.ii.pw.service.ProveedorRegistration;
  */
 @ManagedBean(name="beanproveedores")
 @ViewScoped
-public class ProveedorResourceRESTService {
+public class ProveedorResourceRESTService extends LazyDataModel{
     
 	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
@@ -84,23 +88,52 @@ public class ProveedorResourceRESTService {
     @Inject
     ProveedorRegistration registration;
     
+    private List<Proveedor> filtroProveedor;
+    private List<Proveedor> proveedores;
+    
+    
+    public List<Proveedor> getProveedores() {
+		return proveedores;
+	}
+
+
+
+	public void setProveedores(List<Proveedor> proveedores) {
+		this.proveedores = proveedores;
+	}
+
+
+
+	@PostConstruct
+    public void init() {
+    	proveedores = listAllProveedores();
+    }
+    
+    
+    
     /*********************Listado ascendente*****************************************************/
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
     public List<Proveedor> listAllProveedores() {
         return repository.findAllOrderedByDescripcion();
     }
     /*********************Listado descendente*****************************************************/
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/desc")
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("/desc")
     public List<Proveedor> listAllProveedoresDescendente() {
         return repository.findAllOrderedDescByDescripcion();
     }
     
     
     
-    @GET
+    public List<Proveedor> getFiltroProveedor() {
+		return filtroProveedor;
+	}
+	public void setFiltroProveedor(List<Proveedor> filtroProveedor) {
+		this.filtroProveedor = filtroProveedor;
+	}
+	@GET
     @Path("/{id:[0-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Proveedor lookupProductoById(@PathParam("id") long id) {

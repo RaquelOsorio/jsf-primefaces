@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+</h:head>
+<h:body>
+	<h:form>
+
+		<p:dataTable value="#{beanclientes.listAllProveedores()}" filteredValue="#{beanclientes.clientesFilteringList}" var="c"
+			widgetVar="tableCarWV">
+
+		<p:column filterBy="#{c.id}" sortBy="#{c.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
+			#{c.id}
+		</p:column>
+
+		<p:column filterBy="#{c.nombre}" sortBy="#{c.nombre}" filterMatchMode="contains" headerText="Nombre" footerText="contains" >
+			#{c.nombre}
+		</p:column>
+		
+		<p:column filterBy="#{c.apellido}" sortBy="#{c.apellido}" filterMatchMode="contains" headerText="Apellido" footerText="contains" >
+			#{c.apellido}
+		</p:column>
+
+
+		</p:dataTable>
+
+	</h:form>
+</h:body>
+
+</html>

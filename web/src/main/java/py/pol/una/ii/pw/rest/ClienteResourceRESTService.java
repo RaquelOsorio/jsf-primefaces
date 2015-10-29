@@ -71,9 +71,20 @@ public class ClienteResourceRESTService {
 
     @Inject
     private ClienteRepository repository;
+    
+	private List<Clientes> clientesFilteringList;
 
-    @Inject
+	@Inject
     ClienteRegistration registration;
+
+	
+    public List<Clientes> getClientesFilteringList() {
+		return clientesFilteringList;
+	}
+
+	public void setClientesFilteringList(List<Clientes> clientesFilteringList) {
+		this.clientesFilteringList = clientesFilteringList;
+	}
 
    /* @GET
     @Produces(MediaType.APPLICATION_JSON)*/
@@ -81,10 +92,10 @@ public class ClienteResourceRESTService {
         return repository.findAllOrderedByNombre();
     }
 
-    @GET
-    @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Clientes lookupProductoById(@PathParam("id") long id) {
+//    @GET
+//    @Path("/{id:[0-9][0-9]*}")
+//    @Produces(MediaType.APPLICATION_JSON)
+    public Clientes lookupProductoById(long id) {
         Clientes cliente = repository.findById(id);
         if (cliente == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
