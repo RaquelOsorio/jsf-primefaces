@@ -158,17 +158,21 @@ public class ClienteResourceRESTService {
     
     
     /*****************************Modificar**********************************************/
-    @PUT
-     //@Consumes(MediaType.APPLICATION_JSON)
-     @Produces(MediaType.APPLICATION_JSON)
-     @Path("/modificar/{id}/{nombre}/{apellido}")
+//    @PUT
+//     //@Consumes(MediaType.APPLICATION_JSON)
+//     @Produces(MediaType.APPLICATION_JSON)
+//     @Path("/modificar/{id}/{nombre}/{apellido}")
      
-    public Response modificarProveedor(@PathParam("id")Long id,@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
+    public Response modificarProveedor(Long id, String nombre, String apellido) {
+    	
+    	System.out.println("entro en modificarProveedor???");
     	Clientes cliente= buscar(id);
     	cliente.setNombre(nombre);
     	cliente.setApellido(apellido);
     	//cliente.setCedula(ci);
     	//proveedor.setId(n);
+    	System.out.println("nombre:" + cliente.getNombre());
+    	
         Response.ResponseBuilder builder = null;
 
         try {
@@ -199,11 +203,11 @@ public class ClienteResourceRESTService {
 
     
     /*****************************Eliminar***********************************************/
-    @DELETE
-    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProvider(@PathParam("id")Long id) {
+//    @DELETE
+//    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProvider(Long id) {
         Response.ResponseBuilder builder = null;
-
+        System.out.println("entro en removeProvider???");
         try {
         	Clientes cliente= buscar(id);
             registration.remover(cliente);
@@ -218,9 +222,10 @@ public class ClienteResourceRESTService {
         return builder.build();
     }
   //  @GET
-    @Produces(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
     //@Path("{id}")
     public Clientes buscar(Long id) {
+    	System.out.println("entro en buscar???");
         return em.find(Clientes.class, id);
        
     }
