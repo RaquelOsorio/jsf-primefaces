@@ -1,0 +1,1 @@
+{"proveedor":{"id":1,"descripcion":"proveedor"}, "detalleCompraList":[{"producto":{"id":1,"detalle":"descrip","precio":12,"stock":0,"proveedor":{"id":1,"descripcion":"proveedor"}},"cantidad":10}]}

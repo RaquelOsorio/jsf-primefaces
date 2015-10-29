@@ -56,21 +56,19 @@ public class ClienteRegistration {
     
     
     
-    public String cargaMasiva(String direccion) throws FileNotFoundException, IOException {
+    public String cargaMasiva(String direc) throws FileNotFoundException, IOException {
     	
-    	 String cadena;
-    	 System.out.println("llegaaaaaaaaaa????????");
+    /*	 String cadena;
          FileReader f = new FileReader(direccion);
-         System.out.println("No llegaaaaaaaaaa????????");
          BufferedReader b = new BufferedReader(f);
          while((cadena = b.readLine())!=null) {
              System.out.println(cadena);
          }
          b.close();
-         return "";
-/*        String errores = new String();
+         return "";*/
+       String errores = new String();
         int cantidadErrores = 0;
-        String direccion = "/home/viviana/IIN2015/2doSemestre/web/EJB/tpWeb/ejb/src/main/java/py/pol/una/ii/pw/service/cliente.txt";
+        String direccion = direc;
         FileReader fr;
         BufferedReader br;
         File archivo;
@@ -104,7 +102,7 @@ public class ClienteRegistration {
                 clienteNuevo.setApellido(cliente.getApellido());
                 if (!error) {
                     try {
-                        em.persist(clienteNuevo);
+                        register(clienteNuevo);
                     } catch (Exception e) {
                         errores = errores + " Error en la linea " + cantidadTotal.toString();
                         cantidadErrores++;
@@ -128,7 +126,7 @@ public class ClienteRegistration {
             //context.setRollbackOnly();
             return errores;
         }
-        return "Carga Exitosa," + cantidadTotal + " clientes cargados";*/
+        return "Carga Exitosa," + cantidadTotal + " clientes cargados";
     }
 
     

@@ -54,10 +54,10 @@ import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.service.ClienteRegistration;
 
 
-/*@Path("/clientes")
-@RequestScoped*/
-@ManagedBean(name="beanclientes")
-@ViewScoped
+@Path("/clientes")
+@RequestScoped
+/*@ManagedBean(name="beanclientes")
+@ViewScoped*/
 public class ClienteResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
@@ -220,7 +220,7 @@ public class ClienteResourceRESTService {
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/IIN2015/2doSemestre/web/EJB/tpWeb/cliente.txt");
+        return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
     }
     
     

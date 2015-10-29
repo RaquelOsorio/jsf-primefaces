@@ -1,6 +1,7 @@
 
 package py.pol.una.ii.pw.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,11 +42,11 @@ import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
 
 
-/*@Path("/cabeceras")
+@Path("/cabeceras")
 @RequestScoped
-*/
-@ManagedBean(name="beancompras")
-@ViewScoped
+
+/*@ManagedBean(name="beancompras")
+@ViewScoped*/
 public class Compra_CabResourceRESTService {
 	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
@@ -90,22 +91,22 @@ public class Compra_CabResourceRESTService {
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear/{proveedor}")*/
-    public void create(Compra_Cab compra) {
-        try {
-        	
-			registration.registrarCompra(compra);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+   // public void create(Compra_Cab compra) {
+       
         
       
-     }
-    public Compra_Cab agregarCabecera(Proveedor proveedor){
+     //}
+    public void agregarCabecera(Proveedor proveedor){
     	Compra_Cab newCabecera= new Compra_Cab();
     	newCabecera.setProveedor(proveedor);
     	newCabecera.setDetalleCompraList(listadetalle);
-    	return newCabecera;
+    	 try {
+         	
+ 			registration.registrarCompra(newCabecera);
+ 		} catch (Exception e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
     	 
      }
     
@@ -147,7 +148,15 @@ public class Compra_CabResourceRESTService {
     }
 
   
-
+    @POST
+    @Path("/cargamasiva")
+  //@Consumes(MediaType.APPLICATION_JSON)
+  //  @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String cargaMasiva() throws IOException {
+        return registration.cargaMasiva("/home/viviana/jsf-primefaces/compras.txt");
+    }
+    
     
     
     

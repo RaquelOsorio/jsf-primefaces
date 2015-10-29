@@ -1,11 +1,13 @@
 package py.pol.una.ii.pw.rest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 
 
 
@@ -51,8 +53,12 @@ import py.pol.una.ii.pw.model.Venta_Cab;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-@ManagedBean(name="beanventas")
-@ViewScoped
+
+
+@Path("/ventas")
+@RequestScoped
+/*@ManagedBean(name="beanventas")
+@ViewScoped*/
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 
@@ -134,37 +140,15 @@ public class Venta_CabResourceRESTService {
 
   
 
-  /*
-    /////////////MODIFICAR UN CLIENTE, INGRESANDO SU ID////////////////////////
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String modificarCliente(Cliente cliente) {
-        return registration.editarCliente(cliente);
+    @POST
+    @Path("/cargamasiva")
+  //@Consumes(MediaType.APPLICATION_JSON)
+  //  @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String cargaMasiva() throws IOException {
+        return registration.cargaMasiva("/home/viviana/jsf-primefaces/ventas.txt");
     }
     
-    ////////////////////////////////////////////////
-    //ELIMINAR UN CLIENTE, INGRESANDO SU ID
-    ////////////////////////////////////////////////
-    @DELETE
-    @Path("{id}")
-   public String eliminarCliente(@PathParam("id") Long id) {
-        String respuesta = "";
-        try {
-            respuesta = registration.borrarCliente(id);
-        } catch (EJBTransactionRolledbackException e) {
-            System.out.println("LLEGO A LA EXCEPCION");
-            Throwable t = e.getCause();
-            while ((t != null) && !(t instanceof ConstraintViolationException)) {
-                t = t.getCause();
-            }
-            if (t instanceof ConstraintViolationException) {
-                return "Advertencia: No se puede borrar el cliente, ya que el mismo se utiliza en otra tabla";
-            }
-
-        }
-        return respuesta;
-    }
-   */
     /**
      * <p>
      * Validates the given Member variable and throws validation exceptions based on the type of error. If the error is standard
