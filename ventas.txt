@@ -1,0 +1,1 @@
+{"cliente":{"id":3,"nombre":"Luis","apellido":"Galeano"}, "detalleVenta":[{"producto":{"id":1,"detalle":"descrip","precio":12,"stock":0,"proveedor":{"id":1,"descripcion":"proveedor"}},"cantidad":10}, {"producto":{"id":2,"detalle":"p","precio":0,"stock":0,"proveedor":{"id":1,"descripcion":"proveedor"}},"cantidad":20}]}

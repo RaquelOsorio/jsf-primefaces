@@ -54,8 +54,8 @@ import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.service.ClienteRegistration;
 
 
-/*@Path("/clientes")
-@RequestScoped*/
+@Path("/clientes")
+@RequestScoped
 @ManagedBean(name="beanclientes")
 @ViewScoped
 public class ClienteResourceRESTService {
@@ -108,11 +108,11 @@ public class ClienteResourceRESTService {
      * or with a map of fields, and related errors.
      */
     /*****************************Crear*****************************************************/
-    @POST
-   // @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/crear/{nombre}/{apellido}")
-    
+//    @POST
+//   // @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("/crear/{nombre}/{apellido}")
+//    
     ////////////////funciona cuando no hay registros de proveedores 
     public Response createCliente(String nombre, String apellido) {
     	Clientes cliente;
@@ -231,7 +231,7 @@ public class ClienteResourceRESTService {
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/IIN2015/2doSemestre/web/EJB/tpWeb/cliente.txt");
+        return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
     }
     
     

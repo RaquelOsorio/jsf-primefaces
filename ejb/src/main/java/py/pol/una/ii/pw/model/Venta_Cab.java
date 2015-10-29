@@ -47,9 +47,9 @@ public class Venta_Cab implements Serializable{
     @OneToOne
     private Clientes cliente;
     
-    @JoinColumn(name = "factura", referencedColumnName = "id")
-    @OneToOne
-    private Factura factura;
+    //@JoinColumn(name = "factura", referencedColumnName = "id")
+    //@OneToOne
+    //private Factura factura;
 
     @JoinColumn(name="detalleVenta",referencedColumnName="id")
     @OneToMany
@@ -88,13 +88,13 @@ public class Venta_Cab implements Serializable{
 		this.cliente = cliente;
 	}
 
-	public Factura getFactura() {
+/*	public Factura getFactura() {
 		return factura;
 	}
 
 	public void setFactura(Factura factura) {
 		this.factura = factura;
-	}
+	}*/
 
 //	public Venta_Cab() {
 	//	super();

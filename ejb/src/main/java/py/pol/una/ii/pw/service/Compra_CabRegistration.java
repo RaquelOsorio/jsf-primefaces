@@ -17,6 +17,7 @@
 package py.pol.una.ii.pw.service;
 
 import py.pol.una.ii.pw.data.Compra_DetRepository;
+import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Proveedor;
@@ -27,6 +28,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -97,15 +105,92 @@ public class Compra_CabRegistration {
         		//DetalleCompra auxiliar= em.find(DetalleCompra.class, aux.getId());
         		//em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
         		//System.out.println("DETALLE cantidad"+aux.getCantidad());
-        		//detalle.remove(it.next());
-        	
-        	
+        		//detalle.remove(it.next());  	
         }
-       
         
     }
     
-    
+    public String cargaMasiva(String direc) throws FileNotFoundException, IOException {
+        String errores = new String();
+        int cantidadErrores = 0;
+        String direccion = direc;
+        FileReader fr;
+        BufferedReader br;
+        File archivo;
+        String linea;
+        Integer cantidadTotal = 0;
+        archivo = new File(direccion);
+        fr = new FileReader(archivo);
+        br = new BufferedReader(fr);
+        Gson gson = new Gson();
+        boolean error = false;
+        while (br.ready()) {
+            linea = br.readLine();
+            cantidadTotal++;
+            //Clientes clienteNuevo = new Clientes();
+            Compra_Cab auxiliar;
+            try {
+   
+                auxiliar = gson.fromJson(linea, Compra_Cab.class);
+                if (auxiliar.getDetalleCompraList() == null) {
+                    errores = errores + "Sin detalles, linea: " + cantidadTotal.toString() + "\n";
+                    error = true;
+                    cantidadErrores++;
+                }
+                
+                if (auxiliar.getProveedor() == null) {
+                    errores = errores + "Sin proveedor, linea: " + cantidadTotal.toString() + "\n";
+                    error = true;
+                    cantidadErrores++;
+                }
+                
+                /*
+                Iterator<DetalleCompra> it=null;
+                it=auxiliar.getDetalle().iterator();
+                //System.out.println("ITERATOR"+it.next().getCantidad());
+                
+                while (it.hasNext())
+                {	
+                	DetalleCompra aux = it.next();
+                	if(aux.getProducto().getProveedor() != auxiliar.getProveedor())
+                	{
+                		errores = errores + "El proveedor no coincide, linea: " + cantidadTotal.toString() + "\n";
+                        error = true;
+                        cantidadErrores++;
+                	}
+                	
+                }*/
+                             
+                
+                if (!error) {
+                    try {
+                    	registrarCompra(auxiliar);
+                    } catch (Exception e) {
+                        errores = errores + " Error en la linea " + cantidadTotal.toString();
+                        cantidadErrores++;
+
+                    }
+                }
+            } catch (Exception e) {
+                errores = errores + "Formato de archivo incorrecto \n";
+                cantidadErrores++;
+
+            }
+
+            error = false;
+        }
+
+        System.out.println("TOTAL: " + cantidadTotal);
+        System.out.println("Errores: " + cantidadErrores);
+        System.out.println("ERRORES: " + errores);
+
+        if (cantidadErrores > 0) {
+            //context.setRollbackOnly();
+            return errores;
+        }
+        return "Carga Exitosa," + cantidadTotal + " compras cargadas";
+    }
+
     
     
     
