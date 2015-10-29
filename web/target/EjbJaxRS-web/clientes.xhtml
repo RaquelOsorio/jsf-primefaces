@@ -32,26 +32,14 @@
             </ul>
         </div>
        
-        <p:dataTable id="tabla" var="car" value="#{clientes.listAllProveedores()}">
-    		<p:column headerText="Id">
-       			 <h:outputText value="#{car.id}" />
-    		</p:column>
- 
-    		<p:column headerText="Year">
-        		<h:outputText value="#{car.nombre}" />
-    		</p:column>
- 
-    		<p:column headerText="Brand">
-        		<h:outputText value="#{car.apellido}" />
-    		</p:column>
- 		</p:dataTable>
+      
  		<h1> Nuevo Cliente</h1>
    <h:form>
    		<p>Nombre</p>
    		<p><h:inputText value="#{nombre}"/></p>
    		<p>Apellido</p>
    		<p><h:inputText value="#{apellido}"/></p>
-   		<p:commandButton value="Crear" actionListener='#{clientes.createCliente(nombre,apellido)}' update="tabla" />
+   		<p:commandButton value="Crear" actionListener='#{beanclientes.createCliente(nombre,apellido)}' action='listaCliente'/>
    </h:form>
         
 

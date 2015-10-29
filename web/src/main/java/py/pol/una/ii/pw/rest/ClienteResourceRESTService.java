@@ -56,8 +56,8 @@ import py.pol.una.ii.pw.service.ClienteRegistration;
 
 @Path("/clientes")
 @RequestScoped
-/*@ManagedBean(name="beanclientes")
-@ViewScoped*/
+@ManagedBean(name="beanclientes")
+@ViewScoped
 public class ClienteResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
