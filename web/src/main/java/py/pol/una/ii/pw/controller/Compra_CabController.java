@@ -16,14 +16,21 @@
  */
 package py.pol.una.ii.pw.controller;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Produces;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import py.pol.una.ii.pw.data.ClienteRepository;
+import py.pol.una.ii.pw.data.Compra_CabRepository;
+import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 
@@ -31,7 +38,9 @@ import py.pol.una.ii.pw.service.Compra_CabRegistration;
 // EL name
 // Read more about the @Model stereotype in this FAQ:
 // http://sfwk.org/Documentation/WhatIsThePurposeOfTheModelAnnotation
-@Model
+//@Model
+@ManagedBean(name="beancompras")
+@ViewScoped
 public class Compra_CabController {
 
     @Inject
@@ -39,8 +48,22 @@ public class Compra_CabController {
 
     @Inject
     private Compra_CabRegistration cabeceraRegistration;
+    
+    @Inject
+    private Compra_CabRepository repository;
 
     private Compra_Cab newCabecera;
+    
+
+	private List<Compra_Cab> compra_CabFilteringList;
+
+	public List<Compra_Cab> getCompra_CabFilteringList() {
+		return compra_CabFilteringList;
+	}
+
+	public void setCompra_CabFilteringList(List<Compra_Cab> compra_CabFilteringList) {
+		this.compra_CabFilteringList = compra_CabFilteringList;
+	}
 
     @Produces
     @Named
@@ -66,6 +89,11 @@ public class Compra_CabController {
         newCabecera = new Compra_Cab();
     }
 
+    
+    public List<Compra_Cab> listAllCompra_Cab() {
+        return repository.findAllOrderedByFecha();
+    }
+    
     private String getRootErrorMessage(Exception e) {
         // Default to general error message that registration failed.
     String errorMessage = "La operacion ha fallado";

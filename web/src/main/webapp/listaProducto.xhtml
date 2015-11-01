@@ -7,29 +7,47 @@
 	xmlns:p="http://primefaces.org/ui"
 	template="./default.xhtml">
 	<ui:define name="content">
-		<h2><center>Lista de Productos</center></h2>
-        <p:dataTable var="cli" value="#{beanproductos.listAllProductos()}">
- 
-    		<p:column headerText="Id">
-       			 <h:outputText value="#{cli.id}" />
-    		</p:column>
- 
-    		<p:column headerText="Detalle">
-        		<h:outputText value="#{cli.detalle}" />
-    		</p:column>
- 
-    		<p:column headerText="Precio">
-        		<h:outputText value="#{cli.precio}" />
-    		</p:column>
-    		<p:column headerText="Operacion">
-    			
-    			<p:commandButton action="#{cli.id}" value="Eliminar" image="ui-icon-trash"/>
-    			<p:commandButton action="#{cli.id}" value="Modificar" image="ui-icon-pencil"/>
-            </p:column>
- 		</p:dataTable>
- 				<p></p>
-    			<p:commandButton action="#{cli.id}" value="Crear" image="ui-icon-plusthick"/>
 
+		<h2><center>Lista de Productos</center></h2>
+		<h:form>
+		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		</h:form>
+		<p></p>
+		
+	<h:form>
+	
+	<p:dataTable id="tabla" caseSensitiveSort="true"
+                  	 emptyMessage="Ningun elemento encontrado" value="#{beanproductos.listAllProductos()}" filteredValue="#{beanproductos.productosFilteringList}" var="q"
+					widgetVar="tableCarWV" rowsPerPageLabel="Filas" 
+                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 	 paginator="true" rows="10" style="margin-bottom:20px" 
+                 	 rowsPerPageTemplate="1,5">
+	
+		<p:column filterBy="#{q.id}" sortBy="#{q.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
+			<!-- #{c.id} --><h:outputText value="#{q.id}" />
+		</p:column>
+
+		<p:column filterBy="#{q.detalle}" sortBy="#{q.detalle}" filterMatchMode="contains" headerText="Detalle" footerText="contains" >
+			<!-- #{c.nombre} --><h:outputText value="#{q.detalle}" />
+		</p:column>
+		
+		<p:column filterBy="#{q.precio}" sortBy="#{q.precio}" filterMatchMode="contains" headerText="Precio" footerText="contains" >
+			<!-- #{c.apellido} --><h:outputText value="#{q.precio}" />
+		</p:column>
+
+   		<p:column headerText="Eliminar">
+    			
+				<p:commandButton actionListener="#{beanproductos.removeProducto(q.id)}" value="Eliminar" image="ui-icon-trash" update="tabla">
+					<p:confirm header="Confirmation" message="¿Desea eliminar el producto?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+       				 <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        			 <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    			</p:confirmDialog>
+    	</p:column>
+		</p:dataTable>
+		
+	</h:form>
 
 	</ui:define>
 </ui:composition>

@@ -26,18 +26,18 @@
 			widgetVar="tableCarWV" rowsPerPageLabel="Filas" 
                      paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  	 paginator="true" rows="10" style="margin-bottom:20px" 
-                 	 rowsPerPageTemplate="5">
+                 	 rowsPerPageTemplate="1,5">
 	
 		<p:column filterBy="#{c.id}" sortBy="#{c.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
-			#{c.id}
+			<!-- #{c.id} --><h:outputText value="#{c.id}" />
 		</p:column>
 
 		<p:column filterBy="#{c.nombre}" sortBy="#{c.nombre}" filterMatchMode="contains" headerText="Nombre" footerText="contains" >
-			#{c.nombre}
+			<!-- #{c.nombre} --><h:outputText value="#{c.nombre}" />
 		</p:column>
 		
 		<p:column filterBy="#{c.apellido}" sortBy="#{c.apellido}" filterMatchMode="contains" headerText="Apellido" footerText="contains" >
-			#{c.apellido}
+			<!-- #{c.apellido} --><h:outputText value="#{c.apellido}" />
 		</p:column>
 
    		<p:column headerText="Eliminar">
@@ -54,32 +54,29 @@
  
   		<p:column headerText="Modificar">
  
-    			
-    			<p:commandButton value="Modificar" image="ui-icon-pencil" >
-    				<f:setPropertyActionListener target="#{beanclientes.buscar(c.id)}" value= "#{cli}"/>
-    			</p:commandButton>
-    			
- 	  			<p:dialog global="true" showEffect="fade" hideEffect="fade">
-	 				<h:form>
-						<p:panelGrid columns="2">
-							
-							<p:outputLabel value="Nombre del cliente"/>
-							<p:inputText value="#{c.nombre}" />
-							
-							<p:outputLabel value="Apellido del cliente"/>
-							<p:inputText value="#{c.apellido}" />
-							
-						</p:panelGrid>
-						
-						<p:commandButton value="Modificar"
-										 actionListener="#{beanclientes.modificarProveedor(c.id, c.nombre, c.apellido)}" />
-					</h:form>
-				
-				</p:dialog>    			
+    			<h:commandButton action="#{restEasyCliente.seleccionarUnCliente(c.id)}" value="Editar"></h:commandButton>
+ 	
         </p:column>
 
 
 		</p:dataTable>
+		
+		<!-- <p:panel header="Editar Cliente" style="margin-bottom:20px">
+                        <p:panelGrid columns="4">
+
+                            <p:outputLabel value="Nombre" for="nombre" />   
+                            <p:outputLabel value="Apellido" for="apellido" />                
+                     
+
+                            <p:inputTextarea id="nombre" value="#{restEasyCliente.nombreM}" />
+                            <p:inputTextarea id="apellido" value="#{restEasyCliente.apellidosM}" />
+                            
+                        </p:panelGrid>
+                        <h:commandButton action="#{restEasyCliente.modificarCliente()}" value="Editar" disabled="#{empty restEasyCliente.nombreM}"></h:commandButton>
+                        <h:messages errorClass="error" />
+                    </p:panel> -->
+		
+		
 
 	</h:form>
 

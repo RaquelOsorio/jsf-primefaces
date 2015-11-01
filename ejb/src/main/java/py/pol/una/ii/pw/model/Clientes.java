@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+
 import com.google.gson.annotations.Expose;
 
 @Entity
@@ -48,7 +49,8 @@ import com.google.gson.annotations.Expose;
 	   @NamedQuery(name = "Clientes.findAll", query = "SELECT c FROM Clientes c"),
 	   })
 public class Clientes implements Serializable {
-    /** Default value included to remove warning. Remove or modify at will. **/
+    
+	/** Default value included to remove warning. Remove or modify at will. **/
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -66,7 +68,29 @@ public class Clientes implements Serializable {
     @Size(min = 1, max = 25)
     @Pattern(regexp = "[^0-9]*", message = "No es una descripcion valida")
     private String apellido;
+    
+    
+    public Clientes(Long id, String nombre, String apellido) {
+//		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.apellido = apellido;
 
+	}
+	public Clientes() {
+	//	super();
+		// TODO Auto-generated constructor stub
+	}
+
+//    boolean editable;
+//    
+//	public boolean isEditable() {
+//		return editable;
+//	}
+//	public void setEditable(boolean editable) {
+//		this.editable = editable;
+//	}
+	
 	public Long getId() {
 		return id;
 	}

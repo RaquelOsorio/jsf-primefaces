@@ -104,10 +104,10 @@ public class ProveedorResourceRESTService extends LazyDataModel{
 
 
 
-	@PostConstruct
-    public void init() {
-    	proveedores = listAllProveedores();
-    }
+//	@PostConstruct
+//    public void init() {
+//    	proveedores = listAllProveedores();
+//    }
     
     
     
@@ -133,10 +133,10 @@ public class ProveedorResourceRESTService extends LazyDataModel{
 	public void setFiltroProveedor(List<Proveedor> filtroProveedor) {
 		this.filtroProveedor = filtroProveedor;
 	}
-	@GET
-    @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Proveedor lookupProductoById(@PathParam("id") long id) {
+//	@GET
+//    @Path("/{id:[0-9][0-9]*}")
+//    @Produces(MediaType.APPLICATION_JSON)
+    public Proveedor lookupProductoById(/*@PathParam("id")*/ long id) {
         Proveedor proveedor = repository.findById(id);
         if (proveedor == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -237,9 +237,9 @@ public class ProveedorResourceRESTService extends LazyDataModel{
 
     
     /*****************************Eliminar***********************************************/
-    @DELETE
-    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProvider(@PathParam("id")Long id) {
+//    @DELETE
+//    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProvider(/*@PathParam("id")*/Long id) {
         Response.ResponseBuilder builder = null;
 
         try {

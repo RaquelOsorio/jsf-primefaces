@@ -48,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import py.pol.una.ii.pw.data.ProductoRepository;
+import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.ProductoRegistration;
@@ -59,6 +60,8 @@ import py.pol.una.ii.pw.service.ProductoRegistration;
  */
 @ManagedBean(name="beanproductos")
 @ViewScoped
+//@Path("/productos")
+//@RequestScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
@@ -76,8 +79,16 @@ public class ProductoResourceRESTService {
 
     @Inject
     ProductoRegistration registration;
-    /***************Listado Ascendente***************************************************/
-    @GET
+    
+	private List<Producto> productosFilteringList;
+    
+    public List<Producto> getProductosFilteringList() {
+		return productosFilteringList;
+	}
+	public void setProductosFilteringList(List<Producto> productosFilteringList) {
+		this.productosFilteringList = productosFilteringList;
+	}
+	/***************Listado Ascendente***************************************************/
     @Produces(MediaType.APPLICATION_JSON)
     public List<Producto> listAllProductos() {
         return repository.findAllOrderedByDetalle();
@@ -196,9 +207,9 @@ public class ProductoResourceRESTService {
 
 
     /*****************************Eliminar***********************************************/
-    @DELETE
-    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProducto(@PathParam("id")Long id) {
+//    @DELETE
+//    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProducto(/*@PathParam("id")*/Long id) {
         Response.ResponseBuilder builder = null;
 
         try {
