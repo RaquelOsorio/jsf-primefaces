@@ -61,19 +61,19 @@ public class SolicitudesCompraBean {
           Iterator<Producto> it=null;
           it=productos.iterator();
           //Producto aux = it.next();
-          while (it.hasNext() /*|| aux.getStock()<limite*/)
+          while (it.hasNext() )
           {		Producto aux = it.next();
-          		if (aux.getStock()>= limite || existeSolicitud(aux)){ 
+          		if (aux.getStock()>= limite){ 
           			break;
           		}
-          		
-          		
-          		SolicitudCompra nuevaSolicitud = new SolicitudCompra();
-          		nuevaSolicitud.setFecha(new Date());
-          		nuevaSolicitud.setProducto(aux);
-          		System.out.println(aux.getDetalle() + aux.getStock());
-          		em.persist(nuevaSolicitud);
-          		
+          		if(!(existeSolicitud(aux)))
+          		{	
+          			SolicitudCompra nuevaSolicitud = new SolicitudCompra();
+          			nuevaSolicitud.setFecha(new Date());
+          			nuevaSolicitud.setProducto(aux);
+          			System.out.println(aux.getDetalle() + aux.getStock());
+          			em.persist(nuevaSolicitud);
+          		}
           }
 
       }
@@ -93,11 +93,14 @@ public class SolicitudesCompraBean {
           it=solicitudes.iterator();
           while (it.hasNext())
           {		SolicitudCompra aux = it.next();
-          		if (aux.getProducto()==p){
+          System.out.println("verificar"+ aux.getProducto().getDetalle()+aux.getProducto().getStock());
+          		if (aux.getProducto().getId()==p.getId()){
+          			System.out.println("if"+aux.getProducto().getDetalle());
           			return true;
           		}
           		
           }
+          System.out.println("false"+p.getDetalle());
     	  return false;
       }
       public void remover(SolicitudCompra solicitud) throws Exception {
