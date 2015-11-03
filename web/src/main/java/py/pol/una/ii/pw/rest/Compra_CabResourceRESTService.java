@@ -27,10 +27,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -55,20 +57,18 @@ import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.DetalleCompra;
+import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
 
-/**
- * JAX-RS Example
- * <p/>
- * This class produces a RESTful service to read/write the contents of the productos table.
- */
 @Path("/cabeceras")
 @RequestScoped
 
+/*@ManagedBean(name="beancompras")
+@ViewScoped*/
 public class Compra_CabResourceRESTService {
-	@Inject 
+	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
 	
     @Inject
@@ -87,16 +87,17 @@ public class Compra_CabResourceRESTService {
     Compra_DetRegistration registrationdetalle;
 
     private List<Compra_Cab> compras;
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+
+    List <Compra_Det> listadetalle;
+    /*@GET
+    @Produces(MediaType.APPLICATION_JSON)*/
     public List<Compra_Cab> listAllCabeceras() {
         return repository.findAllOrderedByFecha();
     }
 
-    @GET
+    /*@GET
     @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)*/
     public Compra_Cab lookupProductoById(@PathParam("id") long id) {
         Compra_Cab cabecera = repository.findById(id);
         if (cabecera == null) {
@@ -107,22 +108,37 @@ public class Compra_CabResourceRESTService {
 
     /****************************Crear Compras********************************************/
     
-    @POST
-    //@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/crear/{proveedor}")
-    public void create(@PathParam("proveedor") Long proveedor) {
-        try {
-        	Proveedor p= em.find(Proveedor.class, proveedor);
-			//registration.registrarCompra(p);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-      
+
+    public String agregarCabecera(Proveedor proveedor){
+    	Compra_Cab newCabecera= new Compra_Cab();
+    	newCabecera.setProveedor(proveedor);
+    	newCabecera.setDetalleCompraList(listadetalle);
+    	 try {
+         	
+ 			registration.registrarCompra(newCabecera);
+ 		}catch(EJBTransactionRolledbackException e)
+         {
+            
+            System.out.println("CANTIDAD NEGATIVA!!!!");
+            return "Error, cantidad menor o igual a cero";
+
+      }	 catch (Exception e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 			return "Hubo un error";
+ 		}
+    	 return "Exito";
+    	 
      }
-   
+    
+    public void agregarDetalle(Producto producto, int cantidad){
+    	Compra_Det newDetalle= new Compra_Det();
+    	newDetalle.setProducto(producto);
+    	newDetalle.setCantidad(cantidad);
+    	listadetalle.add(newDetalle);
+    	 
+     }
+    
 
 
     /*****************************Eliminar***********************************************/
@@ -152,15 +168,25 @@ public class Compra_CabResourceRESTService {
        
     }
 
-
-    /*************************Carga Masiva***************************************************/
+  
     @POST
     @Path("/cargamasiva")
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
-  //  @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/sonia/Desktop/compras.txt");
+    	try{
+    		return registration.cargaMasiva("/home/viviana/jsf-primefaces/compras.txt");
+    	}catch(EJBTransactionRolledbackException e)
+        {
+            
+                System.out.println("CANTIDAD NEGATIVA!!!!");
+                return "Error, cantidad menor o igual a cero";
+
+            
+
+          }	
+    		//return "exito";
     }
     
     

@@ -64,9 +64,8 @@ import py.pol.una.ii.pw.service.FiltersObject;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-
-@Path("/ventas")
-@RequestScoped
+@ManagedBean(name="beanventas")
+@ViewScoped
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 
@@ -84,8 +83,8 @@ public class Venta_CabResourceRESTService {
     @Inject
     Venta_CabRegistration registration;
 
-    static List<Venta_Cab> ventas;
-    
+   static List<Venta_Cab> ventas;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Venta_Cab> listAllVenta_Cab() {
@@ -109,15 +108,27 @@ public class Venta_CabResourceRESTService {
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear/{cliente}")
-    public void create(Venta_Cab cab) {
+    public String create(Venta_Cab cab) {
         try {
         	
-			registration.registrarVenta(cab);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        	registration.registrarVenta(cab);
+			
+		}catch(EJBTransactionRolledbackException e)
+        {
+            
+            System.out.println("CANTIDAD NEGATIVA!!!!");
+            return "Hubo un error de transaccion";
+
         
+
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+        	e.printStackTrace();
+        	return "Hubo un error";
+			//
+			
+		}
+        return "Hubo un error";
       
      }
 
@@ -140,9 +151,9 @@ public class Venta_CabResourceRESTService {
 
         return builder.build();
     }
-    @GET
+  //  @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
+    //@Path("{id}")
     public Venta_Cab buscar(Long id) {
         return em.find(Venta_Cab.class, id);
        
@@ -156,7 +167,19 @@ public class Venta_CabResourceRESTService {
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/jsf-primefaces/ventas.txt");
+    	try{
+    		return registration.cargaMasiva("/home/viviana/jsf-primefaces/ventas.txt");
+    	}
+    	catch(EJBTransactionRolledbackException e)
+        {
+                
+                    System.out.println("CANTIDAD NEGATIVA!!!!");
+                    return "Hubo un error";
+
+                
+
+        }		
+    	
     }
     
     /**
@@ -205,6 +228,7 @@ public class Venta_CabResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+    
     
   //////////////////////////////////////////////////////////
   //Filtrado

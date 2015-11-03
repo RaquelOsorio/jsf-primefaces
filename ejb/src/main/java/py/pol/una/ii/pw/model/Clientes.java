@@ -18,7 +18,6 @@ package py.pol.una.ii.pw.model;
 
 import java.io.Serializable;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,10 +38,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-
 
 import com.google.gson.annotations.Expose;
 
@@ -53,8 +48,7 @@ import com.google.gson.annotations.Expose;
 	   @NamedQuery(name = "Clientes.findAll", query = "SELECT c FROM Clientes c"),
 	   })
 public class Clientes implements Serializable {
-    
-	/** Default value included to remove warning. Remove or modify at will. **/
+    /** Default value included to remove warning. Remove or modify at will. **/
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -72,29 +66,7 @@ public class Clientes implements Serializable {
     @Size(min = 1, max = 25)
     @Pattern(regexp = "[^0-9]*", message = "No es una descripcion valida")
     private String apellido;
-    
-    
-    public Clientes(Long id, String nombre, String apellido) {
-//		super();
-		this.id = id;
-		this.nombre = nombre;
-		this.apellido = apellido;
 
-	}
-	public Clientes() {
-	//	super();
-		// TODO Auto-generated constructor stub
-	}
-
-//    boolean editable;
-//    
-//	public boolean isEditable() {
-//		return editable;
-//	}
-//	public void setEditable(boolean editable) {
-//		this.editable = editable;
-//	}
-	
 	public Long getId() {
 		return id;
 	}
@@ -119,48 +91,5 @@ public class Clientes implements Serializable {
 		this.apellido = apellido;
 	}
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-    
-     @Override
-    public boolean equals(Object obj){
-        System.out.println("Llego al equals de cliente");
-        if ( obj == null )
-            return false;
-        if ( !( obj instanceof Clientes) )
-            return false;
-        Clientes cli = (Clientes) obj;
-        
-        
-        return new EqualsBuilder()
-                        .append(this.nombre, cli.nombre)
-                        .append(this.id, cli.id)
-                        .append(this.apellido, cli.apellido)
-                        .isEquals();
-                      
-                        
-    }
-
-    /*@Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Cliente)) {
-            return false;
-        }
-        Cliente other = (Cliente) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }*/
-
-    @Override
-    public String toString() {
-        return nombre + " " + apellido;
-    }
 
 }

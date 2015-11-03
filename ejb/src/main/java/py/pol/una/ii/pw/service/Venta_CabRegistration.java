@@ -15,25 +15,28 @@ import py.pol.una.ii.pw.data.Compra_DetRepository;
 import py.pol.una.ii.pw.data.Venta_DetRepository;
 import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Compra_Cab;
+import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Venta_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Venta_Det;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
-// The @Stateless annotation eliminates the need for manual transaction demarcation
+import javax.ejb.EJBTransactionRolledbackException;
+
 @Stateless
 
 public class Venta_CabRegistration {
-
 	@Inject
     private Logger log;
 
@@ -66,7 +69,8 @@ public class Venta_CabRegistration {
     }
     /**********************Registrar una venta**********************************************/
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void registrarVenta(Venta_Cab nuevacabecera) throws Exception {
+
+    public void registrarVenta(Venta_Cab nuevacabecera) throws Exception, EJBTransactionRolledbackException  {
     	Venta_Cab cabecera= new Venta_Cab();
     	Date fecha = new Date();
     	cabecera.setFecha(fecha);
@@ -89,95 +93,150 @@ public class Venta_CabRegistration {
         	cdetalle.setCabecera(cabecera);
         	cdetalle.setCantidad(aux.getCantidad());
         	cdetalle.setProducto(aux.getProducto());
-        	detalleRegistration.register(cdetalle);
-        	//DetalleVenta auxiliar= em.find(DetalleVenta.class, aux.getId());
-        	//em.remove(em.contains(auxiliar) ? auxiliar : em.merge(auxiliar));
-        	//System.out.println("DETALLE cantidad"+aux.getCantidad());
-        	//detalle.remove(it.next());
+        	//detalleRegistration.register(cdetalle);
+        	/***Actualiza el stock***/
+    		Long pid= cdetalle.getProducto().getId();
+    		Producto p= em.find(Producto.class, pid);
+    		p.setStock(p.getStock()-aux.getCantidad());
+    		em.merge(p);
+        	em.persist(cdetalle);
         	
         }
        
         
     }
     public String cargaMasiva(String direc) throws FileNotFoundException, IOException {
-        String errores = new String();
+    	String errores = new String();
         int cantidadErrores = 0;
-        String direccion = direc;
-        FileReader fr;
-        BufferedReader br;
-        File archivo;
-        String linea;
         Integer cantidadTotal = 0;
-        archivo = new File(direccion);
-        fr = new FileReader(archivo);
-        br = new BufferedReader(fr);
         Gson gson = new Gson();
         boolean error = false;
-        while (br.ready()) {
-            linea = br.readLine();
-            cantidadTotal++;
-            Venta_Cab auxiliar;
-            try {
+        FileInputStream inputStream = null;
+        Scanner sc = null;
+        FileInputStream carga = null;
+        Scanner sccarga = null;
+        try {
+            inputStream = new FileInputStream(direc);
+            sc = new Scanner(inputStream, "UTF-8");
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                cantidadTotal++;
+                Venta_Cab auxiliar;
+                try {
    
-                auxiliar = gson.fromJson(linea, Venta_Cab.class);
-                if (auxiliar.getDetalleVenta() == null) {
-                    errores = errores + "Sin detalles, linea: " + cantidadTotal.toString() + "\n";
-                    error = true;
-                    cantidadErrores++;
-                }
-                
-                if (auxiliar.getCliente() == null) {
-                    errores = errores + "No se cargó el cliente, linea: " + cantidadTotal.toString() + "\n";
-                    error = true;
-                    cantidadErrores++;
-                }
-                
-                /*
-                Iterator<DetalleCompra> it=null;
-                it=auxiliar.getDetalle().iterator();
-                //System.out.println("ITERATOR"+it.next().getCantidad());
-                
-                while (it.hasNext())
-                {	
-                	DetalleCompra aux = it.next();
-                	if(aux.getProducto().getProveedor() != auxiliar.getProveedor())
-                	{
-                		errores = errores + "El proveedor no coincide, linea: " + cantidadTotal.toString() + "\n";
-                        error = true;
-                        cantidadErrores++;
+                	auxiliar = gson.fromJson(line, Venta_Cab.class);
+                	if (auxiliar.getDetalleVenta() == null) {
+                		errores = errores + "Sin detalles, linea: " + cantidadTotal.toString() + "\n";
+                		error = true;
+                		cantidadErrores++;
                 	}
+                	if (auxiliar.getDetalleVenta().size()==0)
+                	{
+                		errores = errores + "Sin detalles, linea: " + cantidadTotal.toString() + "\n";
+                		error = true;
+                		cantidadErrores++;
+                		
+                	}	
                 	
-                }*/
+                	if (auxiliar.getCliente().getNombre().length()==0 || auxiliar.getCliente().getApellido().length()==0)
+                	{
+                		errores = errores + "datos incompletos, linea: " + cantidadTotal.toString() + "\n";
+                		error = true;
+                		cantidadErrores++;
+                		
+                	}
+                	if (auxiliar.getCliente() == null) {
+                		errores = errores + "No se cargó el cliente, linea: " + cantidadTotal.toString() + "\n";
+                		error = true;
+                		cantidadErrores++;
+                	}
+                
+                	
+                	Iterator<Venta_Det> it=null;
+                	it=auxiliar.getDetalleVenta().iterator();
+                	//System.out.println("ITERATOR"+it.next().getCantidad());
+                
+                	while (it.hasNext())
+                	{	
+                		Venta_Det aux = it.next();
+                		if(aux.getCantidad() <= 0)
+                		{
+                			errores = errores + "Cantidad menor o igual a 0, linea: " + cantidadTotal.toString() + "\n";
+                        	error = true;
+                        	cantidadErrores++;
+                		}
+                		Long pid= aux.getProducto().getId();
+                		Producto p= em.find(Producto.class, pid);
+                		
+                		if((p.getStock()-aux.getCantidad()) < 0)
+                		{
+                			errores = errores + "No hay stock suficiente, linea: " + cantidadTotal.toString() + "\n";
+                        	error = true;
+                        	cantidadErrores++;
+                		}
+                	
+                	}
                              
                 
-                if (!error) {
-                    try {
-                    	registrarVenta(auxiliar);
-                    } catch (Exception e) {
-                        errores = errores + " Error en la linea " + cantidadTotal.toString();
-                        cantidadErrores++;
-
-                    }
-                }
+                
             } catch (Exception e) {
                 errores = errores + "Formato de archivo incorrecto \n";
+                error=true;
                 cantidadErrores++;
 
             }
 
-            error = false;
         }
 
-        System.out.println("TOTAL: " + cantidadTotal);
-        System.out.println("Errores: " + cantidadErrores);
-        System.out.println("ERRORES: " + errores);
+            if (sc.ioException() != null) {
+                throw sc.ioException();
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (sc != null) {
+                sc.close();
+            }
+        }
+        if (!error)
+        {	try {
+            	carga = new FileInputStream(direc);
+            	sccarga = new Scanner(carga, "UTF-8");
+            	while (sccarga.hasNextLine()) {
+            		
+            		Venta_Cab cabecera;
+            		String linea = sccarga.nextLine();
+            		cabecera = gson.fromJson(linea, Venta_Cab.class);
+            		try {
+                    	registrarVenta(cabecera);
+                    } 
+                    catch (Exception e) {
+                        errores = errores + " Error en la linea " + cantidadTotal.toString();
+                        cantidadErrores++;
 
+                    }
+            	}
+            	// note that Scanner suppresses exceptions
+            	if (sccarga.ioException() != null) {
+            		throw sccarga.ioException();
+            	}
+        	} finally {
+        		if (carga != null) {
+        			carga.close();
+        		}
+        		if (sccarga != null) {
+        			sccarga.close();
+        		}
+        	}
+        	return "Carga Exitosa," + cantidadTotal + " ventas cargadas";
+        
+        }	
         if (cantidadErrores > 0) {
-            //context.setRollbackOnly();
             return errores;
         }
-        return "Carga Exitosa," + cantidadTotal + " ventas cargadas";
-    }
+       return "";
+     }
 
     
     public List<Venta_Cab> filtrar (FiltersObject filtros){

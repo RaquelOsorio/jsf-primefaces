@@ -1,6 +1,7 @@
 package py.pol.una.ii.pw.service;
 
 import py.pol.una.ii.pw.model.Clientes;
+import py.pol.una.ii.pw.model.Proveedor;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
@@ -10,16 +11,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
 
 // The @Stateless annotation eliminates the need for manual transaction demarcation
 @Stateless
@@ -58,76 +64,94 @@ public class ClienteRegistration {
     
     
     public String cargaMasiva(String direc) throws FileNotFoundException, IOException {
-    	
-    /*	 String cadena;
-         FileReader f = new FileReader(direccion);
-         BufferedReader b = new BufferedReader(f);
-         while((cadena = b.readLine())!=null) {
-             System.out.println(cadena);
-         }
-         b.close();
-         return "";*/
-       String errores = new String();
+        String errores = new String();
         int cantidadErrores = 0;
-        String direccion = direc;
-        FileReader fr;
-        BufferedReader br;
-        File archivo;
-        String linea;
         Integer cantidadTotal = 0;
-        archivo = new File(direccion);
-        fr = new FileReader(archivo);
-        br = new BufferedReader(fr);
         Gson gson = new Gson();
         boolean error = false;
-        while (br.ready()) {
-            linea = br.readLine();
-            cantidadTotal++;
-            Clientes clienteNuevo = new Clientes();
-            Clientes cliente;
-            try {
-                cliente = gson.fromJson(linea, Clientes.class);
-                if (cliente.getNombre() == null) {
-                    errores = errores + "Cliente sin nombre, linea: " + cantidadTotal.toString() + "\n";
-                    error = true;
+        FileInputStream inputStream = null;
+        Scanner sc = null;
+        FileInputStream carga = null;
+        Scanner sccarga = null;
+        try {
+            inputStream = new FileInputStream(direc);
+            sc = new Scanner(inputStream, "UTF-8");
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                cantidadTotal++;
+                Clientes clienteNuevo = new Clientes();
+                Clientes cliente;
+                try {
+                    cliente = gson.fromJson(line, Clientes.class);
+                    if (cliente.getNombre() == null || cliente.getNombre().length() < 1 ) {
+                        errores = errores + "Cliente sin nombre, linea: " + cantidadTotal.toString() + "\n";
+                        error = true;
+                        System.out.println(errores);
+                        cantidadErrores++;
+                    }
+                    //if ((cliente.getNombre().equals(cliente.getNombre().toString())) ) {
+                    //	errores = errores + "Tipo de dato Incorrecto, linea: " + cantidadTotal.toString() + "\n";
+                    //   error = true;
+                    //  cantidadErrores++;
+                    //}
+                    if (cliente.getApellido() == null || cliente.getApellido()=="") {
+                        errores = errores + "Cliente sin apellido, linea: " + cantidadTotal.toString() + "\n";
+                        error = true;
+                        cantidadErrores++;
+                    }
+                } catch (Exception e) {
+                    errores = errores + "Formato de archivo incorrecto \n";
+                    error= true;
                     cantidadErrores++;
                 }
                 
-                if (cliente.getApellido() == null) {
-                    errores = errores + "Cliente sin apellido, linea: " + cantidadTotal.toString() + "\n";
-                    error = true;
-                    cantidadErrores++;
-                }
-
-                clienteNuevo.setNombre(cliente.getNombre());
-                clienteNuevo.setApellido(cliente.getApellido());
-                if (!error) {
-                    try {
-                        register(clienteNuevo);
-                    } catch (Exception e) {
-                        errores = errores + " Error en la linea " + cantidadTotal.toString();
-                        cantidadErrores++;
-
-                    }
-                }
-            } catch (Exception e) {
-                errores = errores + "Formato de archivo incorrecto \n";
-                cantidadErrores++;
-
             }
-
-            error = false;
+            if (sc.ioException() != null) {
+                throw sc.ioException();
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (sc != null) {
+                sc.close();
+            }
         }
-
-        System.out.println("TOTAL: " + cantidadTotal);
-        System.out.println("Errores: " + cantidadErrores);
-        System.out.println("ERRORES: " + errores);
-
+        if (!error)
+        {	try {
+            	carga = new FileInputStream(direc);
+            	sccarga = new Scanner(carga, "UTF-8");
+            	while (sccarga.hasNextLine()) {
+            		Clientes clienteNuevo = new Clientes();
+            		Clientes cliente;
+            		String linea = sccarga.nextLine();
+            		cliente = gson.fromJson(linea, Clientes.class);
+            		em.persist(cliente);
+            		// System.out.println(line);
+            	}
+            	// note that Scanner suppresses exceptions
+            	if (sccarga.ioException() != null) {
+            		throw sccarga.ioException();
+            	}
+        	} finally {
+        		if (carga != null) {
+        			carga.close();
+        		}
+        		if (sccarga != null) {
+        			sccarga.close();
+        		}
+        	}
+        	return "Carga Exitosa," + cantidadTotal + " clientes cargados";
+        
+        }	
         if (cantidadErrores > 0) {
-            //context.setRollbackOnly();
             return errores;
         }
-        return "Carga Exitosa," + cantidadTotal + " clientes cargados";
+       return "";
+        
+        
+        
+        
     }
 
     public List<Clientes> filtrar(FiltersObject filtros) {

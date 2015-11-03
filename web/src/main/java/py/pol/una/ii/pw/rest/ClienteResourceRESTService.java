@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -57,10 +59,10 @@ import py.pol.una.ii.pw.service.ClienteRegistration;
 import py.pol.una.ii.pw.service.FiltersObject;
 
 import java.lang.reflect.Type;
-
-
 @Path("/clientes")
 @RequestScoped
+@ManagedBean(name="beanclientes")
+@ViewScoped
 public class ClienteResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
@@ -79,9 +81,9 @@ public class ClienteResourceRESTService {
     ClienteRegistration registration;
 
     static List<Clientes> clientes;
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+
+   /* @GET
+    @Produces(MediaType.APPLICATION_JSON)*/
     public List<Clientes> listAllProveedores() {
         return repository.findAllOrderedByNombre();
     }
@@ -108,7 +110,7 @@ public class ClienteResourceRESTService {
     @Path("/crear/{nombre}/{apellido}")
     
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createCliente(@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
+    public Response createCliente(String nombre, String apellido) {
     	Clientes cliente;
     	cliente= new Clientes();
     	cliente.setNombre(nombre);
@@ -223,9 +225,9 @@ public class ClienteResourceRESTService {
     @Path("/cargamasiva")
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
-  //  @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/sonia/Desktop/clientes.txt");
+        return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
     }
     
     
@@ -262,6 +264,7 @@ public class ClienteResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+
 
     //////////////////////////////////////////////////////////
     //Filtrado

@@ -39,7 +39,6 @@ import java.util.List;
 
 import py.pol.una.ii.pw.model.Producto;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -87,34 +86,15 @@ public class Proveedor implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	   @Override
-	    public int hashCode() {
-	        int hash = 0;
-	        hash += (id != null ? id.hashCode() : 0);
-	        return hash;
-	    }
-	    
-	     @Override
-	    public boolean equals(Object obj){
-	        System.out.println("Llego al equals de cliente");
-	        if ( obj == null )
-	            return false;
-	        if ( !( obj instanceof Proveedor) )
-	            return false;
-	        Proveedor prov = (Proveedor) obj;
-	        
-	        
-	        return new EqualsBuilder()
-	                        .append(this.descripcion, prov.descripcion)
-	                        .isEquals();
-	                      
-	                        
-	    }
+	/*public List<Producto> getProducto() {
+		return producto;
+	}
 
-	    @Override
-	    public String toString() {
-	        return descripcion + " ";
-	    }
+	public void setProducto(List<Producto> producto) {
+		this.producto = producto;
+	}*/
+
+
 
     
 }

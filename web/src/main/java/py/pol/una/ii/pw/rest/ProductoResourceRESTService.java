@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -55,17 +57,12 @@ import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProductoRegistration;
 
-/**
- * JAX-RS Example
- * <p/>
- * This class produces a RESTful service to read/write the contents of the productos table.
- */
-@Path("/productos")
-@RequestScoped
+@ManagedBean(name="beanproductos")
+@ViewScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
-	@PersistenceContext(unitName="PersistenceApp")
+	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em; 
 	
     @Inject
@@ -79,15 +76,21 @@ public class ProductoResourceRESTService {
 
     @Inject
     ProductoRegistration registration;
-    
+
     private List<Producto> productos;
-    
     /***************Listado Ascendente***************************************************/
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Producto> listAllProductos() {
         return repository.findAllOrderedByDetalle();
     }
+    /***************Listado Ascendente POR PRODUCTO***************************************************/
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Producto> listAllProductosByStockAscendente() {
+        return repository.findAllOrderedByStock();
+    }
+    
     /***************Listado por Proveedores***********************************************/
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -120,7 +123,7 @@ public class ProductoResourceRESTService {
     	producto= new Producto();
     	producto.setDetalle(des);
     	producto.setPrecio(precio);
-    	producto.setStock(stock);
+    	producto.setStock(0);
     	Proveedor prov= em.find(Proveedor.class, proveedor);
     	producto.setProveedor(prov);
         Response.ResponseBuilder builder = null;
@@ -277,7 +280,7 @@ public class ProductoResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
-    
+
     //////////////////////////////////////////////////////////
     //Filtrado
     //////////////////////////////////////////////////////////

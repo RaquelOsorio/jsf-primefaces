@@ -61,6 +61,17 @@ public class ProductoRepository {
         criteria.select(producto).orderBy(cb.asc(producto.get("detalle")));
         return em.createQuery(criteria).getResultList();
     }
+    /*******************Listado por stock ascendente********************************************/
+    public List<Producto> findAllOrderedByStock() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Producto> criteria = cb.createQuery(Producto.class);
+        Root<Producto> producto = criteria.from(Producto.class);
+        // Swap criteria statements if you would like to try out type-safe criteria queries, a new
+        // feature in JPA 2.0
+        // criteria.select(member).orderBy(cb.asc(member.get(Member_.name)));
+        criteria.select(producto).orderBy(cb.asc(producto.get("stock")));
+        return em.createQuery(criteria).getResultList();
+    }
     
     
     //Listar por proveedores
