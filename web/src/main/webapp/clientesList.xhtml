@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+
+		<h2><center>Lista de Clientes</center></h2>
+		<h:form>
+		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		</h:form>
+		<p></p>
+		
+	
+                <h:form id="form">
+                    <p:dataTable id= "tabla" caseSensitiveSort="true"
+                                 emptyMessage="Ningun elemento encontrado"
+
+                                 rowsPerPageLabel="Filas" var="cli" value="#{clientBean.lazyModel}" rows="10" paginator="true"
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1,5,10" lazy="true">
+
+                        <p:column headerText="Nombre" sortBy="#{cli.nombre}" filterBy="#{cli.nombre}">
+                            <h:outputText value="#{cli.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Apellido" sortBy="#{cli.apellido}" filterBy="#{cli.apellido}">
+                            <h:outputText value="#{cli.apellido}"/>
+                        </p:column>
+                      <!--  <p:column headerText="Eliminar">
+    			
+				<p:commandButton actionListener="#{clientBean.deleteCliente(cli.id)}" value="Eliminar" image="ui-icon-trash" update="tabla">
+					<p:confirm header="Confirmation" message="¿Desea eliminar el cliente?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    			
+    			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+       				 <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        			 <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    			</p:confirmDialog>
+    	</p:column>	 -->
+                        
+                    </p:dataTable>
+                    
+                    <center>
+                        <p:commandButton value="Exportar a CSV" 
+                                         action="#{lazyClientesModel.exportarCSV}" image="ui-icon-document"/>
+                    </center>
+                </h:form>
+	</ui:define>
+</ui:composition>

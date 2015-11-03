@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+
+		<h2><center>Lista de Compras</center></h2>
+		<h:form>
+		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		</h:form>
+		<p></p>
+		
+<h:form id="form">
+            <p:dataTable id="tablaCompra" caseSensitiveSort="true"
+                         emptyMessage="Ningun elemento encontrado"
+                         selection="#{compra.compra}" selectionMode="single" 
+                rowsPerPageLabel="Filas" var="det" value="#{compra.lazyModel}" rows="10" paginator="true"
+                         
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="1,5,10" lazy="true">
+                <p:column headerText="Fecha" sortBy="#{det.fecha}">
+                    <h:outputText  value="#{det.fecha}" >
+                                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                    </h:outputText>
+                </p:column>
+               
+                <p:column headerText="Proveedor" sortBy="#{det.proveedor.descripcion}" filterBy="#{det.proveedor.descripcion}">
+                    <h:outputText value="#{det.proveedor.descripcion}" />
+                </p:column>
+            <!--    <f:facet name="footer">
+             <p:commandButton process="tablaCompra" update=":mainForm:form:display" icon="ui-icon-search" value="Ver" oncomplete="PF('compraDialog').show()" />
+        </f:facet> -->
+            </p:dataTable>
+           <!-- <p:dialog closeOnEscape="true"   header="Detalles de la compra" widgetVar="compraDialog" resizable="true"  width="200"
+                      modal="true">  
+  
+        <p:outputPanel id="display" style="text-align:center;">
+            
+                <f:facet name="header">
+                     <h:outputText value="Compra" />
+                </f:facet>
+ 
+                <h:outputText value="Fecha:" />
+                <h:outputText value="#{compra.compra.fecha}" >
+                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                </h:outputText>
+                <ui:repeat value="#{compra.compra.detalleCompraList}" var="det">
+                    <h:outputText value="#{det.producto.nombre} - #{det.cantidad}" style="display:block"/>
+            </ui:repeat>
+                 <h:outputText value="Total:" />
+                <h:outputText value="#{compra.compra.total}" />
+           
+        </p:outputPanel>
+    </p:dialog>   -->
+           <center>
+             <p:commandButton value="Exportar a CSV" 
+                              action="#{lazyComprasModel.exportarCSV}" image="ui-icon-document"/>
+           </center>
+        </h:form>
+
+	</ui:define>
+</ui:composition>

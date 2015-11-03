@@ -29,11 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -54,13 +51,16 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.SortOrder;
-import org.primefaces.model.filter.*;
+import java.lang.reflect.Type;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import py.pol.una.ii.pw.data.ProveedorRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Page;
 import py.pol.una.ii.pw.model.Proveedor;
+import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProveedorRegistration;
 
 /**
@@ -68,9 +68,9 @@ import py.pol.una.ii.pw.service.ProveedorRegistration;
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
-@ManagedBean(name="beanproveedores")
-@ViewScoped
-public class ProveedorResourceRESTService extends LazyDataModel{
+@Path("/proveedores")
+@RequestScoped
+public class ProveedorResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
@@ -88,55 +88,28 @@ public class ProveedorResourceRESTService extends LazyDataModel{
     @Inject
     ProveedorRegistration registration;
     
-    private List<Proveedor> filtroProveedor;
-    private List<Proveedor> proveedores;
-    
-    
-    public List<Proveedor> getProveedores() {
-		return proveedores;
-	}
-
-
-
-	public void setProveedores(List<Proveedor> proveedores) {
-		this.proveedores = proveedores;
-	}
-
-
-
-//	@PostConstruct
-//    public void init() {
-//    	proveedores = listAllProveedores();
-//    }
-    
-    
+    static List<Proveedor> proveedores;
     
     /*********************Listado ascendente*****************************************************/
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Proveedor> listAllProveedores() {
         return repository.findAllOrderedByDescripcion();
     }
     /*********************Listado descendente*****************************************************/
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("/desc")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/desc")
     public List<Proveedor> listAllProveedoresDescendente() {
         return repository.findAllOrderedDescByDescripcion();
     }
     
     
     
-    public List<Proveedor> getFiltroProveedor() {
-		return filtroProveedor;
-	}
-	public void setFiltroProveedor(List<Proveedor> filtroProveedor) {
-		this.filtroProveedor = filtroProveedor;
-	}
-//	@GET
-//    @Path("/{id:[0-9][0-9]*}")
-//    @Produces(MediaType.APPLICATION_JSON)
-    public Proveedor lookupProductoById(/*@PathParam("id")*/ long id) {
+    @GET
+    @Path("/{id:[0-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Proveedor lookupProductoById(@PathParam("id") long id) {
         Proveedor proveedor = repository.findById(id);
         if (proveedor == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -237,9 +210,9 @@ public class ProveedorResourceRESTService extends LazyDataModel{
 
     
     /*****************************Eliminar***********************************************/
-//    @DELETE
-//    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProvider(/*@PathParam("id")*/Long id) {
+    @DELETE
+    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProvider(@PathParam("id")Long id) {
         Response.ResponseBuilder builder = null;
 
         try {
@@ -339,7 +312,42 @@ public class ProveedorResourceRESTService extends LazyDataModel{
     		try { if (c != null) c.close(); } catch (SQLException e) {}
     	}
 }
+    
+    
 
+    
+    //////////////////////////////////////////////////////////
+    //Filtrado
+    //////////////////////////////////////////////////////////
+    @GET
+    @Path("/filtrar/{param}")
+    public Response filtrar(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        proveedores = registration.filtrar(filtros);
+        Gson objetoGson = new Gson();
+        if (this.proveedores.isEmpty()) {
+            return Response
+                    .status(200)
+                    .entity("[]").build();
+        } else {
+            return Response
+                    .status(200)
+                    .entity(objetoGson.toJson( proveedores)).build();
+        }
+    }
+    
+    @GET
+    @Path("/filtrarCantidad/{param}")
+    public int filtrarCantidadRegistros(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        int cantidad = registration.filtrarCantidadRegistros(filtros);
+        return cantidad;
+    }
+    
     
     
     /**

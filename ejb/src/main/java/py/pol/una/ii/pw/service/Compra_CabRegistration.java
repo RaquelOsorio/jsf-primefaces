@@ -191,7 +191,72 @@ public class Compra_CabRegistration {
         return "Carga Exitosa," + cantidadTotal + " compras cargadas";
     }
 
+    public List<Compra_Cab> filtrar (FiltersObject filtros){
+        String queryString;
+        
+        // Hacemos el select de la entidad cliente
+        queryString = "SELECT o FROM Compra_Cab o " ;
+        
+        // Si el filtro es distinto de null ampliamos la consulta, con el filtro
+        if (filtros.getFilters() != null && !filtros.getFilters().isEmpty() ){
+            queryString = queryString + "WHERE";
+            for ( Iterator<String> it = filtros.getFilters().keySet().iterator(); it.hasNext(); ){ //iteramos con el filtro
+                try{
+                    String atributo = it.next();
+                    String valor = filtros.getFilters().get(atributo).toString();
+                    if (  atributo.equals("id") || atributo.equals("total") ){
+                        int cantidad = Integer.parseInt(valor);
+                        queryString = queryString + " " + atributo + " = " + cantidad; //si es un entero traemos lo menos o igual a ese numero
+                    } else {
+                        valor = "'%" + valor + "%'";
+                        queryString = queryString + " " + atributo + " LIKE " + valor; //si el valor a filtrar es una cadena , traemos la misma cadena o la que le contiene
+                    }
+                    
+                } catch ( Exception e ){
+                    
+                }
+            }
+        }
+        //Para el ordenamiento, se agrega el order by a la consulta con el campo que se ordena y la direccion de ordenamiento
+        queryString = queryString + "ORDER BY o." + filtros.getSortField() + " " + filtros.getSortOrder();
+        
+        return em.createQuery(queryString, Compra_Cab.class)
+                .setFirstResult(filtros.getFirst())
+                .setMaxResults(filtros.getPageSize())
+                .getResultList();
+    }
     
+    public int filtrarCantidadRegistros (FiltersObject filtros){
+        String queryString;
+        
+        // Establece el nombre de la entidad que se esta buscando
+        queryString = "SELECT COUNT( o ) FROM Compra_Cab o ";
+        
+        // Si existen filtros los agrega a la consulta
+        if (filtros.getFilters() != null && !filtros.getFilters().isEmpty() ){
+            queryString = queryString + "WHERE";
+            for ( Iterator<String> it = filtros.getFilters().keySet().iterator(); it.hasNext(); ){
+                try{
+                    String atributo = it.next();
+                    String valor = filtros.getFilters().get(atributo).toString();
+                    
+                    if (atributo.equals("id") || atributo.equals("total") ){
+                        int cantidad = Integer.parseInt(valor);
+                        queryString = queryString + " " + atributo + " = " + cantidad;
+                    } else {
+                        valor = "'%" + valor + "%'";
+                        queryString = queryString + " " + atributo + " LIKE " + valor;
+                    }
+                
+                } catch ( Exception e ){
+                    
+                }
+            }
+        }
+        Long result = em.createQuery(queryString, Long.class).getSingleResult();
+       // System.out.println("cantidad"+result.intValue());
+        return result.intValue();
+    }
     
     
     

@@ -16,6 +16,8 @@
  */
 package py.pol.una.ii.pw.rest;
 
+import java.util.Set;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
@@ -30,4 +32,28 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/rest")
 public class JaxRsActivator extends Application {
     /* class body intentionally left blank */
+	 @Override
+	    public Set<Class<?>> getClasses() {
+	        Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
+	        try {
+	            Class jsonProvider = Class.forName("org.jboss.resteasy.resteasy-jackson-provider");
+	           
+	            resources.add(jsonProvider);
+	        } catch (ClassNotFoundException ex) {
+	            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	        }
+	        addRestResourceClasses(resources);
+	        return resources;
+	    }
+	    
+	    private void addRestResourceClasses(Set<Class<?>> resources) {
+	        resources.add(Compra_CabResourceRESTService.class);
+	        resources.add(ClienteResourceRESTService.class);
+	        resources.add(ProveedorResourceRESTService.class);
+	        resources.add(ProductoResourceRESTService.class);
+	        resources.add(Venta_CabResourceRESTService.class);
+	        	        
+	        
+	          
+	    }
 }

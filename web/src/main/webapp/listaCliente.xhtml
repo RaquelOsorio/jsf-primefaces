@@ -8,7 +8,7 @@
 	template="./default.xhtml">
 	<ui:define name="content">
 
-		<h2><center>Lista de Clientes</center></h2>
+		<h2><center>Lista de Clientessssssss</center></h2>
 		<h:form>
 		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
 		</h:form>
@@ -16,28 +16,29 @@
 		
 	<h:form>
 	
-<!-- 	    <p:dataTable var="c" value="#{beanclientes.listAllProveedores()}" paginator="true" rows="10"
-                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                 rowsPerPageTemplate="5,10,15" selection="#{beanclientes.clientesFilteringList}" id="carTable" lazy="true">
-	
- -->
 	<p:dataTable id="tabla" caseSensitiveSort="true"
                   	 emptyMessage="Ningun elemento encontrado" value="#{beanclientes.listAllProveedores()}" filteredValue="#{beanclientes.clientesFilteringList}" var="c"
 			widgetVar="tableCarWV" rowsPerPageLabel="Filas" 
-                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                  	 paginator="true" rows="10" style="margin-bottom:20px" 
                  	 rowsPerPageTemplate="1,5">
+		<f:facet name="{Exporters}">
+			 <h:commandLink value="Exportar a CSV" image="ui-icon-document">
+                <p:dataExporter type="csv" target="tabla" fileName="clientes" />
+            </h:commandLink>
+		</f:facet>
+	
 	
 		<p:column filterBy="#{c.id}" sortBy="#{c.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
-			<!-- #{c.id} --><h:outputText value="#{c.id}" />
+			<h:outputText value="#{c.id}" />
 		</p:column>
 
 		<p:column filterBy="#{c.nombre}" sortBy="#{c.nombre}" filterMatchMode="contains" headerText="Nombre" footerText="contains" >
-			<!-- #{c.nombre} --><h:outputText value="#{c.nombre}" />
+			<h:outputText value="#{c.nombre}" />
 		</p:column>
 		
 		<p:column filterBy="#{c.apellido}" sortBy="#{c.apellido}" filterMatchMode="contains" headerText="Apellido" footerText="contains" >
-			<!-- #{c.apellido} --><h:outputText value="#{c.apellido}" />
+			<h:outputText value="#{c.apellido}" />
 		</p:column>
 
    		<p:column headerText="Eliminar">
@@ -51,32 +52,9 @@
         			 <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     			</p:confirmDialog>
     	</p:column>	
- 
-  		<p:column headerText="Modificar">
- 
-    			<h:commandButton action="#{restEasyCliente.seleccionarUnCliente(c.id)}" value="Editar"></h:commandButton>
- 	
-        </p:column>
 
 
-		</p:dataTable>
-		
-		<!-- <p:panel header="Editar Cliente" style="margin-bottom:20px">
-                        <p:panelGrid columns="4">
-
-                            <p:outputLabel value="Nombre" for="nombre" />   
-                            <p:outputLabel value="Apellido" for="apellido" />                
-                     
-
-                            <p:inputTextarea id="nombre" value="#{restEasyCliente.nombreM}" />
-                            <p:inputTextarea id="apellido" value="#{restEasyCliente.apellidosM}" />
-                            
-                        </p:panelGrid>
-                        <h:commandButton action="#{restEasyCliente.modificarCliente()}" value="Editar" disabled="#{empty restEasyCliente.nombreM}"></h:commandButton>
-                        <h:messages errorClass="error" />
-                    </p:panel> -->
-		
-		
+		</p:dataTable>		
 
 	</h:form>
 

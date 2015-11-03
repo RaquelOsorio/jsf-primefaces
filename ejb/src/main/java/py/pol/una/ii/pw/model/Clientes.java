@@ -18,6 +18,7 @@ package py.pol.una.ii.pw.model;
 
 import java.io.Serializable;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,6 +39,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 
 
 import com.google.gson.annotations.Expose;
@@ -115,5 +119,48 @@ public class Clientes implements Serializable {
 		this.apellido = apellido;
 	}
 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+    
+     @Override
+    public boolean equals(Object obj){
+        System.out.println("Llego al equals de cliente");
+        if ( obj == null )
+            return false;
+        if ( !( obj instanceof Clientes) )
+            return false;
+        Clientes cli = (Clientes) obj;
+        
+        
+        return new EqualsBuilder()
+                        .append(this.nombre, cli.nombre)
+                        .append(this.id, cli.id)
+                        .append(this.apellido, cli.apellido)
+                        .isEquals();
+                      
+                        
+    }
+
+    /*@Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Cliente)) {
+            return false;
+        }
+        Cliente other = (Cliente) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }*/
+
+    @Override
+    public String toString() {
+        return nombre + " " + apellido;
+    }
 
 }

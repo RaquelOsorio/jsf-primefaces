@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+
+		<h2><center>Lista de Productos</center></h2>
+		<h:form>
+		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		</h:form>
+		<p></p>
+		
+<h:form id="form">
+                    <p:dataTable var="prod" value="#{producto.lazyModel}" rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1,5,10" lazy="true">
+
+                        <p:column headerText="Detalle" sortBy="#{prod.detalle}" filterBy="#{prod.detalle}">
+                            <h:outputText value="#{prod.detalle}"/>
+                        </p:column>
+                        <p:column headerText="Stock" sortBy="#{prod.stock}" filterBy="#{prod.stock}">
+                            <h:outputText value="#{prod.stock}"/>
+                        </p:column>
+                        <p:column headerText="Precio" sortBy="#{prod.precio}" filterBy="#{prod.precio}">
+                            <h:outputText value="#{prod.precio}"/>
+                        </p:column>
+                        <p:column headerText="Proveedor" sortBy="#{prod.proveedor.descripcion}" filterBy="#{prod.proveedor.descripcion}">
+                            <h:outputText value="#{prod.proveedor.descripcion}"/>
+                        </p:column>
+                       <!--   <p:column>
+                            <h:commandButton action="#{producto.deleteProveedor(prod.id)}" value="Eliminar" ></h:commandButton>
+                        </p:column>
+                        <p:column>
+                            <h:commandButton action="#{producto.seleccionarUnProveedor(prod.id)}" value="Modificar"></h:commandButton>
+                        </p:column> -->
+                    </p:dataTable>
+                   
+                    <center>
+                        <p:commandButton value="Exportar a CSV" 
+                                         action="#{lazyProductoModel.exportarCSV}" image="ui-icon-document"/>
+                    </center>
+                </h:form>
+
+	</ui:define>
+</ui:composition>

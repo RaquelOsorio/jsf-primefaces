@@ -26,8 +26,6 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -48,16 +46,21 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import py.pol.una.ii.pw.data.ClienteRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Clientes;
+import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.ClienteRegistration;
+import py.pol.una.ii.pw.service.FiltersObject;
+
+import java.lang.reflect.Type;
 
 
-//@Path("/clientes")
-//@RequestScoped
-@ManagedBean(name="beanclientes")
-@ViewScoped
+@Path("/clientes")
+@RequestScoped
 public class ClienteResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
@@ -71,63 +74,22 @@ public class ClienteResourceRESTService {
 
     @Inject
     private ClienteRepository repository;
-    
-	private List<Clientes> clientesFilteringList;
 
-	private List<Clientes> orderList;
-	
-//	public String saveAction() {
-//	    
-//		//get all existing value but set "editable" to false 
-//		for (Clientes order : orderList){
-//			order.setEditable(false);
-//		}
-//		
-//		//return to current page
-//		return null;
-//		
-//	}
-//	
-//	public String editAction(Clientes order) {
-//	    
-//		order.setEditable(true);
-//		return null;
-//	}
-// 
-
-	
-	
-	
-	public List<Clientes> getOrderList() {
-		return orderList;
-	}
-
-	public void setOrderList(List<Clientes> orderList) {
-		this.orderList = orderList;
-	}
-
-	@Inject
+    @Inject
     ClienteRegistration registration;
 
-	
-    public List<Clientes> getClientesFilteringList() {
-		return clientesFilteringList;
-	}
-
-	public void setClientesFilteringList(List<Clientes> clientesFilteringList) {
-		this.clientesFilteringList = clientesFilteringList;
-	}
-
-   /* @GET
-    @Produces(MediaType.APPLICATION_JSON)*/
+    static List<Clientes> clientes;
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Clientes> listAllProveedores() {
         return repository.findAllOrderedByNombre();
     }
 
-//    @GET
-//    @Path("/{id:[0-9][0-9]*}")
-//    @Produces(MediaType.APPLICATION_JSON)
-    public Clientes lookupProductoById(long id) {
+    @GET
+    @Path("/{id:[0-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Clientes lookupProductoById(@PathParam("id") long id) {
         Clientes cliente = repository.findById(id);
         if (cliente == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -140,13 +102,13 @@ public class ClienteResourceRESTService {
      * or with a map of fields, and related errors.
      */
     /*****************************Crear*****************************************************/
-//    @POST
-//   // @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("/crear/{nombre}/{apellido}")
-//    
+    @POST
+   // @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/crear/{nombre}/{apellido}")
+    
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createCliente(String nombre, String apellido) {
+    public Response createCliente(@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
     	Clientes cliente;
     	cliente= new Clientes();
     	cliente.setNombre(nombre);
@@ -190,56 +152,52 @@ public class ClienteResourceRESTService {
     
     
     /*****************************Modificar**********************************************/
-//    @PUT
-//     //@Consumes(MediaType.APPLICATION_JSON)
-//     @Produces(MediaType.APPLICATION_JSON)
-//     @Path("/modificar/{id}/{nombre}/{apellido}")
+    @PUT
+     //@Consumes(MediaType.APPLICATION_JSON)
+     @Produces(MediaType.APPLICATION_JSON)
+     @Path("/modificar/{id}/{nombre}/{apellido}")
      
-//    public Response modificarProveedor(Long id, String nombre, String apellido) {
-//    	
-//    	System.out.println("entro en modificarProveedor???");
-//    	Clientes cliente= buscar(id);
-//    	cliente.setNombre(nombre);
-//    	cliente.setApellido(apellido);
-//    	//cliente.setCedula(ci);
-//    	//proveedor.setId(n);
-//    	System.out.println("nombre:" + cliente.getNombre());
-//    	
-//        Response.ResponseBuilder builder = null;
-//
-//        try {
-//            // Validates member using bean validation
-//           // validateCliente(cliente);
-//
-//            registration.modificar(cliente);
-//
-//            // Create an "ok" response
-//            builder = Response.ok();
-//        } catch (ConstraintViolationException ce) {
-//            // Handle bean validation issues
-//            builder = createViolationResponse(ce.getConstraintViolations());
-//        } catch (ValidationException e) {
-//            // Handle the unique constrain violation
-//            Map<String, String> responseObj = new HashMap<String, String>();
-//            responseObj.put("email", "Email taken");
-//            builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
-//        } catch (Exception e) {
-//            // Handle generic exceptions
-//            Map<String, String> responseObj = new HashMap<String, String>();
-//            responseObj.put("error", e.getMessage());
-//            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
-//        }
-//
-//        return builder.build();
-//    }
+    public Response modificarProveedor(@PathParam("id")Long id,@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
+    	Clientes cliente= buscar(id);
+    	cliente.setNombre(nombre);
+    	cliente.setApellido(apellido);
+    	//cliente.setCedula(ci);
+    	//proveedor.setId(n);
+        Response.ResponseBuilder builder = null;
+
+        try {
+            // Validates member using bean validation
+           // validateCliente(cliente);
+
+            registration.modificar(cliente);
+
+            // Create an "ok" response
+            builder = Response.ok();
+        } catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            builder = createViolationResponse(ce.getConstraintViolations());
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("email", "Email taken");
+            builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+        } catch (Exception e) {
+            // Handle generic exceptions
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+
+        return builder.build();
+    }
 
     
     /*****************************Eliminar***********************************************/
-//    @DELETE
-//    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProvider(Long id) {
+    @DELETE
+    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProvider(@PathParam("id")Long id) {
         Response.ResponseBuilder builder = null;
-        System.out.println("entro en removeProvider???");
+
         try {
         	Clientes cliente= buscar(id);
             registration.remover(cliente);
@@ -254,10 +212,9 @@ public class ClienteResourceRESTService {
         return builder.build();
     }
   //  @GET
-//    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     //@Path("{id}")
     public Clientes buscar(Long id) {
-    	System.out.println("entro en buscar???" + id);
         return em.find(Clientes.class, id);
        
     }
@@ -266,9 +223,9 @@ public class ClienteResourceRESTService {
     @Path("/cargamasiva")
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
-    @Produces(MediaType.APPLICATION_JSON)
+  //  @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
+        return registration.cargaMasiva("/home/sonia/Desktop/clientes.txt");
     }
     
     
@@ -306,7 +263,40 @@ public class ClienteResourceRESTService {
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
 
-    /**
+    //////////////////////////////////////////////////////////
+    //Filtrado
+    //////////////////////////////////////////////////////////
+    @GET
+    @Path("/filtrar/{param}")
+    public Response filtrar(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        clientes = registration.filtrar(filtros);
+        Gson objetoGson = new Gson();
+        if (this.clientes.isEmpty()) {
+            return Response
+                    .status(200)
+                    .entity("[]").build();
+        } else {
+            return Response
+                    .status(200)
+                    .entity(objetoGson.toJson(clientes)).build();
+        }
+    }
+    
+    @GET
+    @Path("/filtrarCantidad/{param}")
+    public int filtrarCantidadRegistros(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        int cantidad = registration.filtrarCantidadRegistros(filtros);
+        return cantidad;
+    }
+    
+    
+   /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the
      * "@UniqueConstraint(columnNames = "email")" constraint from the Member class.
      * 

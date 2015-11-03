@@ -1,7 +1,23 @@
-
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors by the @authors tag. See the copyright.txt in the
+ * distribution for a full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package py.pol.una.ii.pw.rest;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,12 +28,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -33,22 +46,29 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.Producto;
+import py.pol.una.ii.pw.model.DetalleCompra;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
 
-
+/**
+ * JAX-RS Example
+ * <p/>
+ * This class produces a RESTful service to read/write the contents of the productos table.
+ */
 @Path("/cabeceras")
 @RequestScoped
 
-/*@ManagedBean(name="beancompras")
-@ViewScoped*/
 public class Compra_CabResourceRESTService {
-	@PersistenceContext(unitName="PersistenceApp") 
+	@Inject 
 	private EntityManager em;
 	
     @Inject
@@ -66,17 +86,17 @@ public class Compra_CabResourceRESTService {
     @Inject
     Compra_DetRegistration registrationdetalle;
 
-
-    List <Compra_Det> listadetalle;
-    /*@GET
-    @Produces(MediaType.APPLICATION_JSON)*/
+    private List<Compra_Cab> compras;
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Compra_Cab> listAllCabeceras() {
         return repository.findAllOrderedByFecha();
     }
 
-    /*@GET
+    @GET
     @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)*/
+    @Produces(MediaType.APPLICATION_JSON)
     public Compra_Cab lookupProductoById(@PathParam("id") long id) {
         Compra_Cab cabecera = repository.findById(id);
         if (cabecera == null) {
@@ -87,37 +107,22 @@ public class Compra_CabResourceRESTService {
 
     /****************************Crear Compras********************************************/
     
-    /*@POST
+    @POST
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/crear/{proveedor}")*/
-   // public void create(Compra_Cab compra) {
-       
+    @Path("/crear/{proveedor}")
+    public void create(@PathParam("proveedor") Long proveedor) {
+        try {
+        	Proveedor p= em.find(Proveedor.class, proveedor);
+			//registration.registrarCompra(p);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
       
-     //}
-    public void agregarCabecera(Proveedor proveedor){
-    	Compra_Cab newCabecera= new Compra_Cab();
-    	newCabecera.setProveedor(proveedor);
-    	newCabecera.setDetalleCompraList(listadetalle);
-    	 try {
-         	
- 			registration.registrarCompra(newCabecera);
- 		} catch (Exception e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
-    	 
      }
-    
-    public void agregarDetalle(Producto producto, int cantidad){
-    	Compra_Det newDetalle= new Compra_Det();
-    	newDetalle.setProducto(producto);
-    	newDetalle.setCantidad(cantidad);
-    	listadetalle.add(newDetalle);
-    	 
-     }
-    
+   
 
 
     /*****************************Eliminar***********************************************/
@@ -147,14 +152,15 @@ public class Compra_CabResourceRESTService {
        
     }
 
-  
+
+    /*************************Carga Masiva***************************************************/
     @POST
     @Path("/cargamasiva")
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
-    @Produces(MediaType.APPLICATION_JSON)
+  //  @Produces(MediaType.APPLICATION_JSON)
     public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/jsf-primefaces/compras.txt");
+        return registration.cargaMasiva("/home/sonia/Desktop/compras.txt");
     }
     
     
@@ -206,6 +212,41 @@ public class Compra_CabResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+    
+    //////////////////////////////////////////////////////////
+   //Filtrado
+   //////////////////////////////////////////////////////////
+   @GET
+   @Path("/filtrar/{param}")
+   public Response filtrar(@PathParam("param") String content){
+       Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+       //Gson gson = new Gson();
+       Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+       FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+       compras = registration.filtrar(filtros);
+       Gson objetoGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd").create();
+       if (this.compras.isEmpty()) {
+           return Response
+                   .status(200)
+                   .entity("[]").build();
+       } else {
+           return Response
+                   .status(200)
+                   .entity(objetoGson.toJson(compras)).build();
+       }
+   }
+   
+   @GET
+   @Path("/filtrarCantidad/{param}")
+   public int filtrarCantidadRegistros(@PathParam("param") String content){
+       Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+       //Gson gson = new Gson();
+           Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
+       FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+       int cantidad = registration.filtrarCantidadRegistros(filtros);
+       return cantidad;
+   }
 
     /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the

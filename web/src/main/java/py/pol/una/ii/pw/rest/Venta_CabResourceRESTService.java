@@ -1,12 +1,18 @@
 package py.pol.una.ii.pw.rest;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+
+
+
+
 
 
 
@@ -44,21 +50,23 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import py.pol.una.ii.pw.data.Venta_CabRepository;
 import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.model.Venta_Cab;
+import py.pol.una.ii.pw.service.FiltersObject;
 //import javax.ejb.EJBTransactionRolledbackException;
 //import javax.ejb.EJB;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
 
-
 @Path("/ventas")
 @RequestScoped
-/*@ManagedBean(name="beanventas")
-@ViewScoped*/
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 
@@ -76,6 +84,8 @@ public class Venta_CabResourceRESTService {
     @Inject
     Venta_CabRegistration registration;
 
+    static List<Venta_Cab> ventas;
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Venta_Cab> listAllVenta_Cab() {
@@ -130,9 +140,9 @@ public class Venta_CabResourceRESTService {
 
         return builder.build();
     }
-  //  @GET
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    //@Path("{id}")
+    @Path("{id}")
     public Venta_Cab buscar(Long id) {
         return em.find(Venta_Cab.class, id);
        
@@ -196,5 +206,39 @@ public class Venta_CabResourceRESTService {
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
     
+  //////////////////////////////////////////////////////////
+  //Filtrado
+  //////////////////////////////////////////////////////////
+  @GET
+  @Path("/filtrar/{param}")
+  public Response filtrar(@PathParam("param") String content){
+      Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+      //Gson gson = new Gson();
+      Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+      FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+      ventas = registration.filtrar(filtros);
+      Gson objetoGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd").create();
+      if (this.ventas.isEmpty()) {
+          return Response
+                  .status(200)
+                  .entity("[]").build();
+      } else {
+          return Response
+                  .status(200)
+                  .entity(objetoGson.toJson(ventas)).build();
+      }
+  }
+  
+  @GET
+  @Path("/filtrarCantidad/{param}")
+  public int filtrarCantidadRegistros(@PathParam("param") String content){
+      Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+      //Gson gson = new Gson();
+          Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
+      FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+      int cantidad = registration.filtrarCantidadRegistros(filtros);
+      return cantidad;
+  }
 
 }

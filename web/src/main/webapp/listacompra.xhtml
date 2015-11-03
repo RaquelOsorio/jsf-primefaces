@@ -19,10 +19,15 @@
 	<p:dataTable id="tabla" caseSensitiveSort="true"
                   	 emptyMessage="Ningun elemento encontrado" value="#{beancompras.listAllCompra_Cab()}" filteredValue="#{beancompras.compra_CabFilteringList}" var="a"
 					widgetVar="tableCarWV" rowsPerPageLabel="Filas" 
-                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                  	 paginator="true" rows="10" style="margin-bottom:20px" 
                  	 rowsPerPageTemplate="1,5">
-	
+		<f:facet name="{Exporters}">
+			 <h:commandLink value="Exportar a CSV" image="ui-icon-document">
+                
+                <p:dataExporter type="csv" target="tabla" fileName="compras" />
+            </h:commandLink>
+		</f:facet>
 		<p:column filterBy="#{a.id}" sortBy="#{a.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
 			<!-- #{c.id} --><h:outputText value="#{a.id}" />
 		</p:column>

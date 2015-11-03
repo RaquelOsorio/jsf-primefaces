@@ -16,6 +16,7 @@
  */
 package py.pol.una.ii.pw.rest;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +25,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -47,10 +46,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import py.pol.una.ii.pw.data.ProductoRepository;
-import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
+import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProductoRegistration;
 
 /**
@@ -58,14 +60,12 @@ import py.pol.una.ii.pw.service.ProductoRegistration;
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
-@ManagedBean(name="beanproductos")
-@ViewScoped
-//@Path("/productos")
-//@RequestScoped
+@Path("/productos")
+@RequestScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
-	@PersistenceContext(unitName="PersistenceApp") 
+	@PersistenceContext(unitName="PersistenceApp")
 	private EntityManager em; 
 	
     @Inject
@@ -80,15 +80,10 @@ public class ProductoResourceRESTService {
     @Inject
     ProductoRegistration registration;
     
-	private List<Producto> productosFilteringList;
+    private List<Producto> productos;
     
-    public List<Producto> getProductosFilteringList() {
-		return productosFilteringList;
-	}
-	public void setProductosFilteringList(List<Producto> productosFilteringList) {
-		this.productosFilteringList = productosFilteringList;
-	}
-	/***************Listado Ascendente***************************************************/
+    /***************Listado Ascendente***************************************************/
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Producto> listAllProductos() {
         return repository.findAllOrderedByDetalle();
@@ -125,7 +120,7 @@ public class ProductoResourceRESTService {
     	producto= new Producto();
     	producto.setDetalle(des);
     	producto.setPrecio(precio);
-    	producto.setStock(0);
+    	producto.setStock(stock);
     	Proveedor prov= em.find(Proveedor.class, proveedor);
     	producto.setProveedor(prov);
         Response.ResponseBuilder builder = null;
@@ -207,9 +202,9 @@ public class ProductoResourceRESTService {
 
 
     /*****************************Eliminar***********************************************/
-//    @DELETE
-//    @Path("/eliminar/{id:[0-9][0-9]*}")
-    public Response removeProducto(/*@PathParam("id")*/Long id) {
+    @DELETE
+    @Path("/eliminar/{id:[0-9][0-9]*}")
+    public Response removeProducto(@PathParam("id")Long id) {
         Response.ResponseBuilder builder = null;
 
         try {
@@ -282,6 +277,39 @@ public class ProductoResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+    
+    //////////////////////////////////////////////////////////
+    //Filtrado
+    //////////////////////////////////////////////////////////
+    @GET
+    @Path("/filtrar/{param}")
+    public Response filtrar(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        productos = registration.filtrar(filtros);
+        Gson objetoGson = new Gson();
+        if (this.productos.isEmpty()) {
+            return Response
+                    .status(200)
+                    .entity("[]").build();
+        } else {
+            return Response
+                    .status(200)
+                    .entity(objetoGson.toJson( productos)).build();
+        }
+    }
+    
+    @GET
+    @Path("/filtrarCantidad/{param}")
+    public int filtrarCantidadRegistros(@PathParam("param") String content){
+        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
+        Gson gson = new Gson();
+        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
+        int cantidad = registration.filtrarCantidadRegistros(filtros);
+        return cantidad;
+    }
+    
 
     /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the

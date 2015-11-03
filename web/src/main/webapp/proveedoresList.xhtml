@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+
+		<h2><center>Lista de Proveedores</center></h2>
+		<h:form>
+		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		</h:form>
+		<p></p>
+		
+	
+	<h:form id="form">
+                    <p:dataTable id="tabla" var="p" value="#{proveedor.lazyModel}" rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                 rowsPerPageTemplate="1,5,10" lazy="true">
+
+						<f:facet name="{Exporters}">
+							 <h:commandLink value="Exportar a CSV" image="ui-icon-document">
+				                
+				                <p:dataExporter type="csv" target="tabla" fileName="compras" />
+				            </h:commandLink>
+						</f:facet>
+
+                        <p:column headerText="Id" sortBy="#{p.id}" filterBy="#{p.id}">
+                            <h:outputText value="#{p.id}"/>
+                        </p:column>
+                        <p:column headerText="Descripcion" sortBy="#{p.descripcion}" filterBy="#{p.descripcion}">
+                            <h:outputText value="#{p.descripcion}"/>
+                        </p:column>
+                        
+                      <!--   <p:column>
+                            <h:commandButton action="#{proveedor.deleteProveedor(prov.id)}" value="Eliminar" ></h:commandButton>
+                        </p:column>
+                        <p:column>
+                            <h:commandButton action="#{proveedor.seleccionarUnProveedor(prov.id)}" value="Modificar"></h:commandButton>
+                        </p:column> -->
+                    </p:dataTable>
+                    
+                    <center>
+                        <p:commandButton value="Exportar a CSV" 
+                                         action="#{proveedorLazyList.exportarCSV}" image="ui-icon-document"/>
+                    </center>
+                </h:form>
+
+	</ui:define>
+</ui:composition>

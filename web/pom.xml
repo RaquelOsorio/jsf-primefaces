@@ -41,6 +41,8 @@
 
    <dependencies>
 
+
+
       <!-- Dependency on the EJB module so we can use it's services if needed -->
       <dependency>
          <groupId>py.pol.una.ii.pw</groupId>
@@ -69,6 +71,37 @@
          <artifactId>jboss-jsf-api_2.1_spec</artifactId>
          <scope>provided</scope>
       </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
 
       <!-- Import the JPA API, we use provided scope as the API is included in JBoss AS 7 -->
       <dependency>

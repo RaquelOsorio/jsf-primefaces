@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 
 import org.apache.http.client.ClientProtocolException;
@@ -23,20 +24,92 @@ import org.primefaces.model.LazyDataModel;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 
+@ManagedBean(name= "producto")
 public class RestEasyProducto {
-
-    private String nombre;
-    private int cantidad;
-    private int precioUnitario;
-    private String descripcion;
+	
+	private String detalle;
+    private int stock;
+    private int precio;
     private Proveedor idProveedor;
     
     private Integer idM;
-    private String nombreM;
-    private int cantidadM;
-    private int precioUnitarioM;
-    private String descripcionM;
+    private String detalleM;
+    private int stockM;
+    private int precioM;
     private Proveedor idProveedorM;
+
+    public String getDetalle() {
+		return detalle;
+	}
+
+	public void setDetalle(String detalle) {
+		this.detalle = detalle;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public int getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(int precio) {
+		this.precio = precio;
+	}
+
+	public Proveedor getIdProveedor() {
+		return idProveedor;
+	}
+
+	public void setIdProveedor(Proveedor idProveedor) {
+		this.idProveedor = idProveedor;
+	}
+
+	public Integer getIdM() {
+		return idM;
+	}
+
+	public void setIdM(Integer idM) {
+		this.idM = idM;
+	}
+
+	public String getDetalleM() {
+		return detalleM;
+	}
+
+	public void setDetalleM(String detalleM) {
+		this.detalleM = detalleM;
+	}
+
+	public int getStockM() {
+		return stockM;
+	}
+
+	public void setStockM(int stockM) {
+		this.stockM = stockM;
+	}
+
+	public int getPrecioM() {
+		return precioM;
+	}
+
+	public void setPrecioM(int precioM) {
+		this.precioM = precioM;
+	}
+
+	public Proveedor getIdProveedorM() {
+		return idProveedorM;
+	}
+
+	public void setIdProveedorM(Proveedor idProveedorM) {
+		this.idProveedorM = idProveedorM;
+	}
+
 
     LazyDataModel<Producto> lazyModel ;
     
@@ -47,101 +120,13 @@ public class RestEasyProducto {
     public void setLazyModel(LazyDataModel<Producto> lazyModel) {
         this.lazyModel = lazyModel;
     }
-    public String getNombre() {
-        return nombre;
-    }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Integer getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
-    }
-
-    public int getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    public void setPrecioUnitario(int precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Proveedor getIdProveedor() {
-        return idProveedor;
-    }
-
-    public void setIdProveedor(Proveedor idProveedor) {
-        this.idProveedor = idProveedor;
-    }
-
-    public Integer getIdM() {
-        return idM;
-    }
-
-    public void setIdM(Integer idM) {
-        this.idM = idM;
-    }
-
-    public String getNombreM() {
-        return nombreM;
-    }
-
-    public void setNombreM(String nombreM) {
-        this.nombreM = nombreM;
-    }
-
-    public Integer getCantidadM() {
-        return cantidadM;
-    }
-
-    public void setCantidadM(Integer cantidadM) {
-        this.cantidadM = cantidadM;
-    }
-
-    public int getPrecioUnitarioM() {
-        return precioUnitarioM;
-    }
-
-    public void setPrecioUnitarioM(int precioUnitarioM) {
-        this.precioUnitarioM = precioUnitarioM;
-    }
-
-    public String getDescripcionM() {
-        return descripcionM;
-    }
-
-    public void setDescripcionM(String descripcionM) {
-        this.descripcionM = descripcionM;
-    }
-
-    public Proveedor getIdProveedorM() {
-        return idProveedorM;
-    }
-
-    public void setIdProveedorM(Proveedor idProveedorM) {
-        this.idProveedorM = idProveedorM;
-    }
-    
-    
     
     public void seleccionarUnProducto(Integer Id) {
 		try {
                         String idModificar = Integer.toString(Id);
 			ClientRequest request = new ClientRequest(
-					"http://localhost:8080/SistemaCompraVenta/rest/productos/" + idModificar);
+					"http://localhost:8080/EjbJaxRS-web/rest/productos/" + idModificar);
 			request.accept("application/json");
 			ClientResponse<String> response = request.get(String.class);
 
@@ -161,9 +146,9 @@ public class RestEasyProducto {
                                 Producto prod = gson.fromJson(output, Producto.class);
 				System.out.println(prod.getDetalle());
                                 
-                                nombreM = prod.getDetalle();
-                                cantidadM = prod.getStock();
-                                precioUnitarioM = prod.getPrecio();
+                                detalleM = prod.getDetalle();
+                                stockM = prod.getStock();
+                                precioM = prod.getPrecio();
                                 idProveedorM = prod.getProveedor();
                                 
 			}
@@ -207,9 +192,7 @@ public class RestEasyProducto {
                                 Gson gson = new Gson();
                                 java.lang.reflect.Type tipoListaProductos = new TypeToken<List<Producto>>(){}.getType();
                                 List<Producto> productos = gson.fromJson(output, tipoListaProductos);
-                                //assertNotNull(productos);
-                                //List<Producto> prod = gson.fromJson(output, List<Producto.class>);
-				//System.out.println(prod.getNombre());
+                               
                                 return productos;
 			}
 
@@ -238,13 +221,11 @@ public class RestEasyProducto {
 			request.accept("application/json");
                         
                         Producto pr = new Producto();
-                        pr.setDetalle(descripcion);
-                        pr.setStock(cantidad);
+                        pr.setDetalle(detalle);
+                        pr.setStock(stock);
                        
                         pr.setProveedor(idProveedor);
-                        pr.setPrecio(precioUnitario);
-			/*String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
-			request.body("application/json", input);*/
+                        pr.setPrecio(precio);
 			
                         Gson p= new Gson();
                         request.body("application/json", p.toJson(pr));
@@ -252,10 +233,10 @@ public class RestEasyProducto {
 			ClientResponse<String> response = request.post(String.class);
                         FacesMessage msg = new FacesMessage("Producto", response.getEntity());  
                         FacesContext.getCurrentInstance().addMessage(null, msg);
-                        nombre = null;
-                        cantidad = 0;
+                        detalle = null;
+                        stock = 0;
                         idProveedor = null;
-                        precioUnitario = 0;
+                        precio = 0;
 
 			
 
@@ -314,10 +295,10 @@ public class RestEasyProducto {
                         
                         /*Producto pr = new Producto();*/
                         Producto productoModificado = new Producto();
-                        productoModificado.setDetalle(nombreM);
-                        productoModificado.setStock(cantidadM);
+                        productoModificado.setDetalle(detalleM);
+                        productoModificado.setStock(stockM);
                         
-                        productoModificado.setPrecio(precioUnitarioM);
+                        productoModificado.setPrecio(precioM);
                         productoModificado.setProveedor(idProveedorM);
 			
                         Gson p= new Gson();
@@ -327,10 +308,10 @@ public class RestEasyProducto {
                         FacesMessage msg = new FacesMessage("Producto", response.getEntity());  
                         FacesContext.getCurrentInstance().addMessage(null, msg);
                         idM = null;
-                        nombreM = null;
-                        cantidadM = 0;
+                        detalleM = null;
+                        stockM = 0;
                         
-                        precioUnitarioM = 0;
+                        precioM = 0;
                         idProveedor = null;
                         idProveedor.setDescripcion(null);
 
@@ -351,7 +332,7 @@ public class RestEasyProducto {
            }
     @PostConstruct
     public void init(){
-        lazyModel = new LazyProductoModel();
+        lazyModel = new ProductoLazyList();
         lazyModel.setRowCount(lazyModel.getRowCount());   
     }
 
