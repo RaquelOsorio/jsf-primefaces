@@ -16,22 +16,30 @@
  */
 package py.pol.una.ii.pw.rest;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -45,12 +53,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.primefaces.model.LazyDataModel;
+
+import com.csvreader.CsvWriter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import py.pol.una.ii.pw.controller.ClienteLazyList;
 import py.pol.una.ii.pw.data.ClienteRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Clientes;
@@ -59,11 +72,45 @@ import py.pol.una.ii.pw.service.ClienteRegistration;
 import py.pol.una.ii.pw.service.FiltersObject;
 
 import java.lang.reflect.Type;
-@Path("/clientes")
-@RequestScoped
+import java.net.MalformedURLException;
+
 @ManagedBean(name="beanclientes")
-@ViewScoped
+@Path("/clientes")
+@ApplicationScoped
+//@ViewScoped
+//@RequestScoped
 public class ClienteResourceRESTService {
+	
+	
+	private String nombre;
+	private String apellido;
+	private long identificador;
+    
+	public long getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+
     
 	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
@@ -81,9 +128,19 @@ public class ClienteResourceRESTService {
     ClienteRegistration registration;
 
     static List<Clientes> clientes;
+    
+    LazyDataModel<Clientes> lazyModel ;
 
-   /* @GET
-    @Produces(MediaType.APPLICATION_JSON)*/
+    public LazyDataModel<Clientes> getLazyModel() {
+		return lazyModel;
+	}
+
+	public void setLazyModel(LazyDataModel<Clientes> lazyModel) {
+		this.lazyModel = lazyModel;
+	}
+
+	@GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Clientes> listAllProveedores() {
         return repository.findAllOrderedByNombre();
     }
@@ -108,13 +165,14 @@ public class ClienteResourceRESTService {
    // @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear/{nombre}/{apellido}")
-    
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createCliente(String nombre, String apellido) {
+    public Response createCliente(ActionEvent event) {
     	Clientes cliente;
     	cliente= new Clientes();
     	cliente.setNombre(nombre);
     	cliente.setApellido(apellido);
+    	nombre="";
+    	apellido="";
     	//cliente.setCedula(ci);
     	//proveedor.setId(n);
         Response.ResponseBuilder builder = null;
@@ -143,8 +201,8 @@ public class ClienteResourceRESTService {
         }
 
         return builder.build();
-    }
-    @POST
+    } 
+       @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void create(Clientes cliente) {
@@ -153,51 +211,63 @@ public class ClienteResourceRESTService {
     }
     
     
-    /*****************************Modificar**********************************************/
-    @PUT
-     //@Consumes(MediaType.APPLICATION_JSON)
-     @Produces(MediaType.APPLICATION_JSON)
-     @Path("/modificar/{id}/{nombre}/{apellido}")
-     
-    public Response modificarProveedor(@PathParam("id")Long id,@PathParam("nombre")String nombre, @PathParam("apellido")String apellido) {
-    	Clientes cliente= buscar(id);
-    	cliente.setNombre(nombre);
-    	cliente.setApellido(apellido);
-    	//cliente.setCedula(ci);
-    	//proveedor.setId(n);
-        Response.ResponseBuilder builder = null;
+       /*****************************Modificar**********************************************/
+       @PUT
+        //@Consumes(MediaType.APPLICATION_JSON)
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/modificar/{id}/{nombre}/{apellido}")
+       public void obtenerCliente(Long id){
+       	Clientes c = buscar(id);
+       	identificador=id;
+       	nombre = c.getNombre();
+       	apellido = c.getApellido();
+       	
+       	
+       }
+       public Response modificarCliente(ActionEvent event) {
+       	
+       		Clientes cliente = buscar(identificador);
+       		cliente.setNombre(nombre);
+       		cliente.setApellido(apellido);
+       		nombre="";
+           	apellido="";
+       		//cliente.setCedula(ci);
+       		//proveedor.setId(n);
+       	
+       		Response.ResponseBuilder builder = null;
 
-        try {
-            // Validates member using bean validation
-           // validateCliente(cliente);
+           try {
+               // Validates member using bean validation
+              // validateCliente(cliente);
 
-            registration.modificar(cliente);
+               registration.modificar(cliente);
 
-            // Create an "ok" response
-            builder = Response.ok();
-        } catch (ConstraintViolationException ce) {
-            // Handle bean validation issues
-            builder = createViolationResponse(ce.getConstraintViolations());
-        } catch (ValidationException e) {
-            // Handle the unique constrain violation
-            Map<String, String> responseObj = new HashMap<String, String>();
-            responseObj.put("email", "Email taken");
-            builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
-        } catch (Exception e) {
-            // Handle generic exceptions
-            Map<String, String> responseObj = new HashMap<String, String>();
-            responseObj.put("error", e.getMessage());
-            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
-        }
+               // Create an "ok" response
+               builder = Response.ok();
+           } catch (ConstraintViolationException ce) {
+               // Handle bean validation issues
+               builder = createViolationResponse(ce.getConstraintViolations());
+           } catch (ValidationException e) {
+               // Handle the unique constrain violation
+               Map<String, String> responseObj = new HashMap<String, String>();
+               responseObj.put("email", "Email taken");
+               builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+           } catch (Exception e) {
+               // Handle generic exceptions
+               Map<String, String> responseObj = new HashMap<String, String>();
+               responseObj.put("error", e.getMessage());
+               builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+           }
 
-        return builder.build();
-    }
-
+           return builder.build();
+       }
     
     /*****************************Eliminar***********************************************/
     @DELETE
     @Path("/eliminar/{id:[0-9][0-9]*}")
     public Response removeProvider(@PathParam("id")Long id) {
+    	
+    	System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         Response.ResponseBuilder builder = null;
 
         try {
@@ -230,8 +300,82 @@ public class ClienteResourceRESTService {
         return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
     }
     
+    /*************************Exportar Cliente***************************************************/
     
+    public void exportarCSV() throws MalformedURLException, IOException
+    {
+    	List<Clientes> cli;
+        cli= this.clientes;
+
+        String outputFile = "/home/sonia/Desktop/ArchivoClientes.csv";
+        boolean alreadyExists = new File(outputFile).exists();
+         
+        if(alreadyExists){
+            File ArchivoClientes = new File(outputFile);
+            ArchivoClientes.delete();
+        }        
+         
+        try {
+ 
+            CsvWriter csvOutput = new CsvWriter(new FileWriter(outputFile, true), ',');
+             
+            
+            csvOutput.write("Nombre");
+            csvOutput.write("Apellido");
+            csvOutput.endRecord();
+ 
+            System.out.println("\nENTRO EN EXPORTAR???");
+            
+            Iterator<Clientes> ite=null;
+            ite=clientes.iterator();
+            while(ite.hasNext()){
+              Clientes emp=ite.next();
+                csvOutput.write(emp.getNombre());
+                csvOutput.write(emp.getApellido());
+                csvOutput.endRecord();                   
+            }
+             
+            csvOutput.close();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+//    	ClienteRegistration cr;
+//    	List<Clientes> lista;
+//    	String stringFiltros="";
+//    	Map<String,Object> filtros = getFiltrado();
+//    	String requestString = "http://localhost:8080/EjbJaxRS-web/rest/clientes";
+//    	String nombre=(String) filtros.get("nombre");
+//		System.out.println(nombre);
+//		String apellido=(String) filtros.get("apellido");
+//		System.out.println(apellido);
+//		
+//		if(nombre!=null || apellido!=null)
+//			requestString+="?";
+//		if (nombre !=null) {
+//			requestString+="nombre="+nombre;
+//			if(apellido!=null)
+//				requestString+="&";
+//		}
+//		if (apellido !=null) {
+//			requestString+="apellidos="+apellido;
+//		}
+//		System.out.println("esto imprime" + getFiltrado());
+//		System.out.println("esto es requeststring" + requestString);
+//		FacesContext context = FacesContext.getCurrentInstance();  
+//		try {  
+//			context.getExternalContext().redirect(requestString);  
+//		}catch (Exception e) {  
+//			e.printStackTrace();  
+//		}  
+    }
+
   
+    
+    
+    
+    
     private void validateCliente(Clientes cliente) throws ConstraintViolationException, ValidationException {
         // Create a bean validator and check for issues.
         Set<ConstraintViolation<Clientes>> violations = validator.validate(cliente);
@@ -265,6 +409,22 @@ public class ClienteResourceRESTService {
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
 
+//	
+//    @GET
+//    @Path("/events.csv")
+//    public Response getEventsAsCsv(@Context HttpServletResponse response) throws Throwable {
+//        DataReader reader = getEvents();
+// 
+//        response.setContentType("text/csv");
+//        response.setHeader("Content-Disposition", "attachment; filename=\"events.csv\"");
+//        PrintWriter printWriter = response.getWriter();
+//        DataWriter writer = new CSVWriter(printWriter).setFieldNamesInFirstRow(true);
+// 
+//        JobTemplate.DEFAULT.transfer(reader, writer);
+// 
+//        return Response.ok().build();
+//    }
+    
 
     //////////////////////////////////////////////////////////
     //Filtrado
@@ -298,6 +458,11 @@ public class ClienteResourceRESTService {
         return cantidad;
     }
     
+    @PostConstruct
+    public void init(){
+        lazyModel = new ClienteLazyList();
+        lazyModel.setRowCount(lazyModel.getRowCount());   
+    }
     
    /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the

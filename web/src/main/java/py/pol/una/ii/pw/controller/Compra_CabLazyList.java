@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,10 @@ import org.jboss.resteasy.spi.BadRequestException;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
+import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
+import py.pol.una.ii.pw.rest.Compra_CabResourceRESTService;
+import py.pol.una.ii.pw.service.Compra_CabRegistration;
 
 @ManagedBean
 public class Compra_CabLazyList extends LazyDataModel<Compra_Cab>{
@@ -39,12 +43,7 @@ public class Compra_CabLazyList extends LazyDataModel<Compra_Cab>{
 
 
     private List<Compra_Cab> compras;
-    //private GsonBuilder gsonBuilder = new GsonBuilder();
-    //gsonBuilder.setDateFormat("dd-MM-yyyy");
-    //private Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy").create();
     Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-   // private Gson gson = gsonBuilder.create();
-    //private Gson gson = new Gson();
     private FiltersObject filtros = new FiltersObject();
     private static Map<String,Object> filtrado = new HashMap();
     @Override
@@ -138,6 +137,11 @@ public class Compra_CabLazyList extends LazyDataModel<Compra_Cab>{
         ClientResponse<String> response;
         BufferedReader br;
         // Codificar el JSON para usar como parte del URL, de otra manera da error
+        
+//        Compra_CabRepository cr= null;
+//        List<Compra_Cab> lista= null;
+//        System.out.println("Entaaaaaaaaaaaaaaaaaaaaa??????????????");
+//    	lista= cr.findAllOrderedByFecha();
         try {
             stringFiltros = URLEncoder.encode(filtrosJson, "UTF-8");
         } catch ( UnsupportedEncodingException e){
@@ -146,6 +150,14 @@ public class Compra_CabLazyList extends LazyDataModel<Compra_Cab>{
         }
         //Recuperar la cantidad de registros de la tabla aplicando los filtros pero sin paginar.
         try {
+        	
+//        	Compra_CabRegistration registration;
+//        	Compra_CabResourceRESTService rest = null;
+//        	List<Compra_Cab> lista= null;
+//        	lista= rest.listAllCabeceras();
+//        	int cant;
+//        	cant= registration.filtrarCantidadRegistros(filtros);
+        	
            request = new ClientRequest("http://localhost:8080/EjbJaxRS-web/rest/cabeceras/filtrarCantidad/" + stringFiltros);
            request.accept("application/json");
            response = request.get(String.class);
@@ -171,7 +183,9 @@ public class Compra_CabLazyList extends LazyDataModel<Compra_Cab>{
         } catch (Exception ex) {
             Logger.getLogger(Compra_CabLazyList.class.getName()).log(Level.SEVERE, null, ex);
         }
+        	
             compras = gson.fromJson(output, new TypeToken<List<Compra_Cab>>(){}.getType());
+//            compras= lista;
             return compras;
         }
 

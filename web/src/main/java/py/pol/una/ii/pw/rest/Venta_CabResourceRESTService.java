@@ -64,8 +64,10 @@ import py.pol.una.ii.pw.service.FiltersObject;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-@ManagedBean(name="beanventas")
-@ViewScoped
+//@ManagedBean(name="beanventas")
+//@ViewScoped
+@Path("/ventas")
+@RequestScoped
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 

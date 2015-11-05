@@ -50,13 +50,14 @@ public class SolicitudesCompraBean {
       @PersistenceContext(unitName="PersistenceApp")
       EntityManager em;
       @Inject
-      ProductoResourceRESTService pm;
+      ProductoRepository pm;
+//      ProductoResourceRESTService pm;
       int limite = 10;
 
      
       public void generarNuevaSolicitud()
       {
-          List<Producto> productos = pm.listAllProductosByStockAscendente();
+          List<Producto> productos = pm.findAllOrderedByStock();
           System.out.println("GENERANDO NUEVAS SOLICITUDES..................");
           Iterator<Producto> it=null;
           it=productos.iterator();

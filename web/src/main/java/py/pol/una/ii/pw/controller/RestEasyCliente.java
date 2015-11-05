@@ -107,7 +107,7 @@ public class RestEasyCliente {
                                 Gson gson = new Gson();
                                 Clientes prov = gson.fromJson(output, Clientes.class);
 				System.out.println(prov.getNombre());
-                                idM= prov.getId();
+                             //   idM= prov.getId();
                                 nombreM = prov.getNombre();
                                 apellidosM = prov.getApellido();
                                
@@ -218,14 +218,16 @@ public class RestEasyCliente {
         
         public void deleteCliente(Integer Id) {
 
+        	System.out.println("aaaaaaaaaaaaaaaentro en deletecliente???");
 		try {
+			System.out.println("entro en deletecliente???");
                         String idEliminar = Integer.toString(Id);
 			ClientRequest request = new ClientRequest(
-					"http://localhost:8080/EjbJaxRS-web/rest/clientes/eliminar/" + idEliminar );
+					"http://localhost:8080/EjbJaxRS-web/rest/clientes/" + idEliminar );
 			
                         
 			ClientResponse<String> response = request.delete(String.class);
-                        FacesMessage msg = new FacesMessage("Cliente", response.getEntity());  
+                        FacesMessage msg = new FacesMessage("Clientes", response.getEntity());  
                         FacesContext.getCurrentInstance().addMessage(null, msg);
 
 					
@@ -257,7 +259,7 @@ public class RestEasyCliente {
                         
                         /*Cliente pr = new Cliente();*/
                         Clientes clienteModificado = new Clientes();
-                        clienteModificado.setId(idM);
+                        //clienteModificado.setId(idM);
                         clienteModificado.setNombre(nombreM);
                         clienteModificado.setApellido(apellidosM);
                         
