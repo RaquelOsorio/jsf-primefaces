@@ -74,6 +74,13 @@
             <artifactId>hibernate-jpa-2.0-api</artifactId>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.1.0</version>
+		</dependency>
+
+        
 	<dependency>
 		<groupId>com.google.code.gson</groupId>
 		<artifactId>gson</artifactId>

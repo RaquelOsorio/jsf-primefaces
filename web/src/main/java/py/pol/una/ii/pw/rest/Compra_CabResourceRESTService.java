@@ -142,10 +142,15 @@ public class Compra_CabResourceRESTService {
     Compra_DetRegistration registrationdetalle;
 
 
+
     private List <Compra_Det> listadetalle;
     private List<Compra_Det>[] vector;
    
     
+
+    
+
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Compra_Cab> listAllCabeceras() {

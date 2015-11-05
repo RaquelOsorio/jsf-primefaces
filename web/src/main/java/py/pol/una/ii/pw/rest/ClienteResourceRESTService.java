@@ -147,11 +147,13 @@ public class ClienteResourceRESTService {
 		return lazyModel;
 	}
 
+
 	public void setLazyModel(LazyDataModel<Clientes> lazyModel) {
 		this.lazyModel = lazyModel;
 	}
 
 	@GET
+
     @Produces(MediaType.APPLICATION_JSON)
     public List<Clientes> listAllClientes() {
         return repository.findAllOrderedByNombre();
@@ -222,7 +224,7 @@ public class ClienteResourceRESTService {
         em.persist(cliente);
     }
     
-    
+       
        /*****************************Modificar**********************************************/
        @PUT
         //@Consumes(MediaType.APPLICATION_JSON)

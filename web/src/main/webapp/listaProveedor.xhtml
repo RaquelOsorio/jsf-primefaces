@@ -43,6 +43,11 @@
     	</p:column>		
 		</p:dataTable>
 		
+		<h:commandLink value= "Exportar">    
+                        
+                        <p:dataExporter type="csv" target="tabla" fileName="proveedor" postProcessor="#{beanproveedores.exportarCSV()}" />  
+                    </h:commandLink>  
+		
 	</h:form>
 
 	</ui:define>

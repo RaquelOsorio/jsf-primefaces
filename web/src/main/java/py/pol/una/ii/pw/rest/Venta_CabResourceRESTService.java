@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
 import javax.annotation.PostConstruct;
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
@@ -52,12 +53,14 @@ import py.pol.una.ii.pw.service.ProductoRegistration;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
+
 import javax.swing.JOptionPane;
 
-@Path("/ventas")
-//@RequestScoped
-@ManagedBean(name="beanventa")
+@Path("ventas")
+@ManagedBean(name="beanventas")
 @ViewScoped
+
+
 public class Venta_CabResourceRESTService {
 	@Inject
     ProductoRegistration pr;

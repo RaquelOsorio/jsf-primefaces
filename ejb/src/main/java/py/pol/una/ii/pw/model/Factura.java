@@ -24,7 +24,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.google.gson.annotations.Expose;
 
 @Entity
-@Table(name = "Factura")
+@Table(name = "factura")
 @XmlRootElement
 
 public class Factura implements Serializable {
