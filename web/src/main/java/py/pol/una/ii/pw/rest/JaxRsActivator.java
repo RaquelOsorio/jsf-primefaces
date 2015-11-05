@@ -54,7 +54,9 @@ public class JaxRsActivator extends Application {
 	        resources.add(Venta_CabResourceRESTService.class);
 	        resources.add(Venta_DetResourceRESTService.class);
 	        resources.add(FacturaResourceRESTService.class);
-	        resources.add(Compra_DetResourceRESTService.class);	        
+	        resources.add(Compra_DetResourceRESTService.class);	 
+	        resources.add(SolicitudesCompraBean.class);	 
+	        
 	        
 	          
 	    }

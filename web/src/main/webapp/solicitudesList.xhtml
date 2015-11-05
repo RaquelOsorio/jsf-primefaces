@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+
+		<h2><center>Lista de Solicitudes de Compra</center></h2>
+		
+                <h:form id="form">
+                    <p:dataTable id= "tabla" caseSensitiveSort="true"
+                                 emptyMessage="Ningun elemento encontrado"
+
+                                 rowsPerPageLabel="Filas" var="cli" value="#{beansolicitudes.lazyModel}" rows="10" paginator="true"
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1,5,10" lazy="true">
+
+                        <p:column headerText="Producto" sortBy="#{cli.producto.detalle}">
+                            <h:outputText value="#{cli.producto.detalle}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" sortBy="#{cli.fecha}">
+                            <h:outputText value="#{cli.fecha}"/>
+                        </p:column>
+       
+    			
+						 <p:column>
+		                            <h:commandButton action="#{beansolicitudes.remover(cli)}" value="Atender Solicitud" ></h:commandButton>
+		                </p:column>
+    			
+                        
+                    </p:dataTable>
+                </h:form>
+	</ui:define>
+</ui:composition>
