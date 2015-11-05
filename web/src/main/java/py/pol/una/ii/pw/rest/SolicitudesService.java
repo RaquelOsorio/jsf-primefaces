@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package py.pol.una.ii.pw.rest;
-import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.SolicitudCompra;
 
 import javax.annotation.PostConstruct;

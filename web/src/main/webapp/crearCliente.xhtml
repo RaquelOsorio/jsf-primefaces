@@ -1,0 +1,21 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+ 		<h1> Nuevo Cliente</h1>
+   <h:form>
+   		<p>Nombre</p>
+   		<p><h:inputText value="#{beanclientes.nombre}"/></p>
+   		<p>Apellido</p>
+   		<p><h:inputText value="#{beanclientes.apellido}"/></p>
+   		<p:commandButton value="Crear" actionListener='#{beanclientes.createCliente}' action='clientesList'/>
+   		<p:link outcome="clientesList" value="Cancelar"/>
+   </h:form>
+        
+
+	</ui:define>
+</ui:composition>

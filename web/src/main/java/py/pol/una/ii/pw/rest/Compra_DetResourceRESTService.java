@@ -62,8 +62,10 @@ import py.pol.una.ii.pw.service.Compra_DetRegistration;
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
 
-@ManagedBean(name="beancompradet")
-@ViewScoped
+//@ManagedBean(name="beancompradet")
+//@ViewScoped
+@Path("/compradetalle")
+@RequestScoped
 public class Compra_DetResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
       //       type=PersistenceContextType.TRANSACTION)

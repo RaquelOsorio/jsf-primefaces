@@ -16,9 +16,14 @@
  */
 package py.pol.una.ii.pw.rest;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,17 +53,21 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.csvreader.CsvWriter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import py.pol.una.ii.pw.data.ProductoRepository;
+import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProductoRegistration;
 
-@ManagedBean(name="beanproductos")
-@ViewScoped
+//@ManagedBean(name="beanproductos")
+//@ViewScoped
+@Path("/productos")
+@RequestScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
@@ -280,6 +289,84 @@ public class ProductoResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+    
+   /*************************Exportar Cliente***************************************************/
+    
+    public void exportarCSV() throws MalformedURLException, IOException
+    {
+    	
+
+        String outputFile = "/home/sonia/Desktop/ArchivoClientes.csv";
+        boolean alreadyExists = new File(outputFile).exists();
+         
+        if(alreadyExists){
+            File ArchivoClientes = new File(outputFile);
+            ArchivoClientes.delete();
+        }        
+         
+        try {
+ 
+            CsvWriter csvOutput = new CsvWriter(new FileWriter(outputFile, true), ',');
+             
+            
+            csvOutput.write("Detalle");
+            csvOutput.write("Precio");
+            csvOutput.write("Stock");
+            csvOutput.write("Proveedor");
+            csvOutput.endRecord();
+ 
+            System.out.println("\nENTRO EN EXPORTAR???");
+            
+            Iterator<Producto> ite=null;
+            ite=productos.iterator();
+            while(ite.hasNext()){
+              Producto emp=ite.next();
+              	String p= Integer.toString(emp.getPrecio());
+              	String s= Integer.toString(emp.getStock());
+              	
+                csvOutput.write(emp.getDetalle());
+                csvOutput.write(p);
+                csvOutput.write(s);
+                csvOutput.write(emp.getProveedor().getDescripcion());
+                csvOutput.endRecord();                   
+            }
+             
+            csvOutput.close();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+//    	ClienteRegistration cr;
+//    	List<Clientes> lista;
+//    	String stringFiltros="";
+//    	Map<String,Object> filtros = getFiltrado();
+//    	String requestString = "http://localhost:8080/EjbJaxRS-web/rest/clientes";
+//    	String nombre=(String) filtros.get("nombre");
+//		System.out.println(nombre);
+//		String apellido=(String) filtros.get("apellido");
+//		System.out.println(apellido);
+//		
+//		if(nombre!=null || apellido!=null)
+//			requestString+="?";
+//		if (nombre !=null) {
+//			requestString+="nombre="+nombre;
+//			if(apellido!=null)
+//				requestString+="&";
+//		}
+//		if (apellido !=null) {
+//			requestString+="apellidos="+apellido;
+//		}
+//		System.out.println("esto imprime" + getFiltrado());
+//		System.out.println("esto es requeststring" + requestString);
+//		FacesContext context = FacesContext.getCurrentInstance();  
+//		try {  
+//			context.getExternalContext().redirect(requestString);  
+//		}catch (Exception e) {  
+//			e.printStackTrace();  
+//		}  
+    }
+
 
     //////////////////////////////////////////////////////////
     //Filtrado

@@ -41,10 +41,13 @@ import py.pol.una.ii.pw.model.Proveedor;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.FacturaRegistration;
 
+
 @Path("/facturas")
 @RequestScoped
 @ManagedBean(name="beanfacturas")
 //@ViewScoped
+
+
 public class FacturaResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp")

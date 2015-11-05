@@ -217,7 +217,6 @@ public class ClienteRegistration {
             }
         }
         Long result = em.createQuery(queryString, Long.class).getSingleResult();
-        // System.out.println("cantidad"+result.intValue());
         return result.intValue();
     }
     
