@@ -8,6 +8,12 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+
+import javax.annotation.PostConstruct;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
@@ -33,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.jasperreports.engine.JRException;
+
 import py.pol.una.ii.pw.data.FacturaRepository;
 import py.pol.una.ii.pw.model.Factura;
 import py.pol.una.ii.pw.model.Proveedor;
@@ -43,7 +50,7 @@ import py.pol.una.ii.pw.service.FacturaRegistration;
 
 
 @Path("/facturas")
-@RequestScoped
+@ViewScoped
 @ManagedBean(name="beanfacturas")
 //@ViewScoped
 
@@ -66,6 +73,8 @@ public class FacturaResourceRESTService {
     FacturaRegistration registration;
     
     private static Future estado=null;
+    
+    private static boolean detener=false;
     //estado de la facturacion true terminado false corriendo
     private boolean est= false;
 
@@ -93,35 +102,63 @@ public class FacturaResourceRESTService {
   //  @Produces(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear")
-    public void createFactura(Factura factura) {
+    public void createFactura() {
     	estado=registration.generarFactura();
+  //  	estado.cancel(true);
        
     }
-    @POST
-//  @Consumes(MediaType.APPLICATION_JSON)
-//  @Produces(MediaType.APPLICATION_JSON)
+  @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/estado")
   public void estadoFacturacion(Factura factura) {
     	
     	while(true) { 
-    	    if(!estado.isDone()) { 
-    	        try {
-    	        	System.out.println("corriendo");
-    	        	est=false;
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-    	    } else { 
-    	        System.out.println("terminado");
-    	        est=true;
-    	        break; 
-    	    } 
-    	}
-     
+    		if(estado==null)
+    		{	est=true;	
+    			break;
+    		}else{
+    			if(!estado.isDone()) { 
+    				try {
+    					System.out.println("corriendo");
+    					est=false;
+    					Thread.sleep(2000);
+    				} catch (InterruptedException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				} 
+    			} else { 
+    				System.out.println("terminado");
+    				est=true;
+    				break; 
+    			} 
+    		}
+    	}	
   }
+
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/detener") 
+  public String detener()
+  {
+      if(estado!=null){
+
+          estado.cancel(true);
+          return "Detenido";
+      }
+
+      return "No se puede detener";
+  }
+  
+
+
+    public void mensaje() {
+    	if (est){
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "No existe proceso de facturación corriendo."));
+    	}else{
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "El proceso de facturación aún está corriendo."));
+    		
+    	}
+    }
 
     /*****************************Eliminar***********************************************/
     @DELETE
@@ -170,6 +207,10 @@ public class FacturaResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
-    
+   /* @PostConstruct
+    public void init(){
+    	estado=null;
+    }
+    */
 
 }

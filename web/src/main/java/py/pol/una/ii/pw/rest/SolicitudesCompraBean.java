@@ -134,7 +134,7 @@ public class SolicitudesCompraBean {
     	  return false;
       }
       public void remover(SolicitudCompra solicitud) throws Exception {
-          em.remove(em.contains(solicitud) ? solicitud : em.merge(solicitud));
+          registration.remover(solicitud);
           
       }
       //////////////////////////////////////////////////////////

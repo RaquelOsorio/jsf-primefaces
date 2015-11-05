@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 
-@Singleton
+@Stateless
 @Startup
 public class SolicitudesService {
 

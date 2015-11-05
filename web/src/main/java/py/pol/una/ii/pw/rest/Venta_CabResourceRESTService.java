@@ -57,7 +57,7 @@ import py.pol.una.ii.pw.service.Venta_CabRegistration;
 import javax.swing.JOptionPane;
 
 @Path("ventas")
-@ManagedBean(name="beanventas")
+@ManagedBean(name="beanventa")
 @ViewScoped
 
 
