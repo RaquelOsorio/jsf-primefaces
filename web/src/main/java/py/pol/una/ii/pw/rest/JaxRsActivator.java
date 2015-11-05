@@ -52,7 +52,7 @@ public class JaxRsActivator extends Application {
 	        resources.add(ProveedorResourceRESTService.class);
 	        resources.add(ProductoResourceRESTService.class);
 	        resources.add(Venta_CabResourceRESTService.class);
-	        	        
+	        resources.add(FacturaResourceRESTService.class);
 	        
 	          
 	    }

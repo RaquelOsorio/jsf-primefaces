@@ -82,8 +82,8 @@ public class ClienteResourceRESTService {
 
     static List<Clientes> clientes;
 
-   /* @GET
-    @Produces(MediaType.APPLICATION_JSON)*/
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Clientes> listAllProveedores() {
         return repository.findAllOrderedByNombre();
     }

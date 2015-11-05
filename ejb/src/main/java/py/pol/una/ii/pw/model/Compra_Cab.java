@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.gson.annotations.Expose;
 
 @Entity
@@ -72,7 +73,6 @@ public class Compra_Cab implements Serializable {
     @JoinColumn(name="detalleCompraList",referencedColumnName="id")
     @OneToMany
     private List<Compra_Det> detalleCompraList;
-
 
 	public List<Compra_Det> getDetalleCompraList() {
 		return detalleCompraList;

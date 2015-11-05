@@ -43,9 +43,6 @@ public class Compra_CabRepository {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Compra_Cab> criteria = cb.createQuery(Compra_Cab.class);
         Root<Compra_Cab> cabecera = criteria.from(Compra_Cab.class);
-        // Swap criteria statements if you would like to try out type-safe criteria queries, a new
-        // feature in JPA 2.0
-        // criteria.select(member).where(cb.equal(member.get(Member_.email), email));
         criteria.select(cabecera).where(cb.equal(cabecera.get("fecha"), fecha));
         return em.createQuery(criteria).getSingleResult();
     }

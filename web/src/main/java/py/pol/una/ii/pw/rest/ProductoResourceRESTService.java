@@ -314,20 +314,4 @@ public class ProductoResourceRESTService {
     }
     
 
-    /**
-     * Checks if a member with the same email address is already registered. This is the only way to easily capture the
-     * "@UniqueConstraint(columnNames = "email")" constraint from the Member class.
-     * 
-     * @param email The email to check
-     * @return True if the email already exists, and false otherwise
-     */
-   /* public boolean emailAlreadyExists(String detalle) {
-        Producto member = null;
-        try {
-            member = repository.findByDetalle(detalle);
-        } catch (NoResultException e) {
-            // ignore
-        }
-        return member != null;
-    }*/
 }
