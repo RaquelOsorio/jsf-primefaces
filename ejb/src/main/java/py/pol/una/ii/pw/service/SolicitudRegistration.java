@@ -3,12 +3,13 @@ package py.pol.una.ii.pw.service;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import py.pol.una.ii.pw.model.SolicitudCompra;
 
-
+@Stateless
 public class SolicitudRegistration {
 	
 	@PersistenceContext(unitName="PersistenceApp")
@@ -32,7 +33,7 @@ public class SolicitudRegistration {
 	                        int cantidad = Integer.parseInt(valor);
 	                        queryString = queryString + " " + atributo + " = " + cantidad; //si es un entero traemos lo menos o igual a ese numero
 	                    } else {
-	                        valor = "'%" + valor + "%'";
+	                        valor = "'%" + valor + "%'";      EntityManager em;
 	                        queryString = queryString + " " + atributo + " LIKE " + valor; //si el valor a filtrar es una cadena , traemos la misma cadena o la que le contiene
 	                    }
 
@@ -80,5 +81,9 @@ public class SolicitudRegistration {
 	        Long result = em.createQuery(queryString, Long.class).getSingleResult();
 	        return result.intValue();
 	    }
-	    
+	    public void remover(SolicitudCompra solicitud) throws Exception {
+	          em.remove(em.contains(solicitud) ? solicitud : em.merge(solicitud));
+	    	  System.out.println("SPÑCDSLFKDSLFKNDSKFNDF"+solicitud.getId());
+	          
+	      }
 }

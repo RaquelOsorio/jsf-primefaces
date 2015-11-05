@@ -10,9 +10,12 @@ import py.pol.una.ii.pw.model.SolicitudCompra;
 import py.pol.una.ii.pw.model.Venta_Cab;
 import py.pol.una.ii.pw.model.Venta_Det;
 
+import javax.annotation.Resource;
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
+import javax.ejb.EJBContext;
 import javax.ejb.EJBTransactionRolledbackException;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -61,7 +64,12 @@ public class FacturaRegistration {
 
     @Inject
     private Event<Factura> facturaEventSrc;
+    
+    @Resource
+    private SessionContext context;
    
+    @Resource
+    private EJBContext contextBD;
 
     public void register(Factura factura) throws Exception {
         log.info("Registering " + factura.getId());
@@ -78,49 +86,57 @@ public class FacturaRegistration {
         em.remove(em.contains(factura) ? factura : em.merge(factura));
         
     }
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+   // @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Asynchronous
     public Future generarFactura(){
-    	File carpeta= new File("/home/viviana/disenhoweb/jsf-primefaces/reportes");
+    	File carpeta= new File("/home/viviana/disenhoweb/jsf-primefaces/reportes/reportes"+nombre());
     	carpeta.mkdirs();
-    	try {
-			Thread.sleep(60000);
-			List<Venta_Cab> ventas= repository.findAllOrderedByVenta_Cab();
-	   	  	Iterator<Venta_Cab> it=null;
-	         it=ventas.iterator();
-	         while (it.hasNext())
-	         {		Venta_Cab aux = it.next();
-	         		if(aux.getFactura()==null){
-	         			Factura nuevafactura= new Factura();
-	         			nuevafactura.setFecha(new Date());
-	         			int monto_total=0;
-	         			List <Venta_Det> detalles= detallerepository.findAllByCabecera(aux.getId());
-	         			Iterator<Venta_Det> ite=null;
-	         			ite=detalles.iterator();
-	         			while(ite.hasNext()){
-	         				Venta_Det detaux=ite.next();
-	         				monto_total=monto_total+(detaux.getCantidad()*detaux.getProducto().getPrecio());
+    	 if(context.wasCancelCalled() == false){
+             	
+    		 	try {
+    		 			Thread.sleep(120000);
+    		 			List<Venta_Cab> ventas= repository.findAllOrderedByVenta_Cab();
+    		 			Iterator<Venta_Cab> it=null;
+    		 			it=ventas.iterator();
+    		 			while (it.hasNext())
+    		 			{		Venta_Cab aux = it.next();
+    		 					if(aux.getFactura()==null){
+    		 						Factura nuevafactura= new Factura();
+    		 						nuevafactura.setFecha(new Date());
+    		 						int monto_total=0;
+    		 						List <Venta_Det> detalles= detallerepository.findAllByCabecera(aux.getId());
+    		 						Iterator<Venta_Det> ite=null;
+    		 						ite=detalles.iterator();
+    		 						while(ite.hasNext()){
+    		 							Venta_Det detaux=ite.next();
+    		 							monto_total=monto_total+(detaux.getCantidad()*detaux.getProducto().getPrecio());
 	         				
-	         			}
-	         			nuevafactura.setMonto_total(monto_total);
-	         			try {
-							register(nuevafactura);
-							generarPDF(carpeta,nuevafactura,detalles,aux);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	         			aux.setFactura(nuevafactura);
-	         			em.merge(aux);
-	         		}
-	         }
-	         return new AsyncResult("Proceso Terminado"); 
+    		 						}
+    		 						nuevafactura.setMonto_total(monto_total);
+    		 						try {
+    		 							register(nuevafactura);
+    		 							generarPDF(carpeta,nuevafactura,detalles,aux);
+    		 						} catch (Exception e) {
+    		 							// TODO Auto-generated catch block
+    		 							e.printStackTrace();
+    		 						}
+    		 						aux.setFactura(nuevafactura);
+    		 						em.merge(aux);
+    		 					}
+    		 			}
+    		 			return new AsyncResult("Proceso Terminado"); 
 
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			 throw new RuntimeException(e1);
-		}
-    	    	
+    		 	} catch (InterruptedException e1) {
+    		 		// TODO Auto-generated catch block
+    		 		throw new RuntimeException(e1);
+    		 	}
+    	 }else{
+    		 System.out.println("CANCELAAAAAAAAAAAAAAAA"+context.wasCancelCalled());
+             borrarDirectorio(carpeta);
+             carpeta.delete();
+             contextBD.setRollbackOnly();
+             return new AsyncResult<String>("");
+         }	 	
     	
     }
     public void generarPDF(File carpeta,Factura factura, List<Venta_Det> detalles, Venta_Cab cabecera) throws JRException{
@@ -137,4 +153,26 @@ public class FacturaRegistration {
     	JasperExportManager.exportReportToPdfFile( jasperPrint, carpeta.getAbsolutePath()+"/factura"+factura.getId()+".pdf"); 
     	  
     }
+    
+    
+    private String nombre(){
+		Long id=System.currentTimeMillis();
+		String s=id.toString();
+		return s;
+	}
+    public void borrarDirectorio (File directorio)
+    {
+        System.out.println("BORRANDO");
+         File[] ficheros = directorio.listFiles();
+          for (int x=0;x<ficheros.length;x++) {
+              if (ficheros[x].isDirectory()) {
+                    borrarDirectorio(ficheros[x]);
+                }
+                    ficheros[x].delete();
+          }
+    }
+    
+    
+    
+    
 }
