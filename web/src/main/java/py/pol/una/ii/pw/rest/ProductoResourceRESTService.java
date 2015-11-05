@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -57,6 +58,9 @@ import com.csvreader.CsvWriter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import javax.faces.event.ActionEvent;
+import org.primefaces.model.LazyDataModel;
+import py.pol.una.ii.pw.controller.ProductoLazyList;
 import py.pol.una.ii.pw.data.ProductoRepository;
 import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Producto;
@@ -64,15 +68,87 @@ import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProductoRegistration;
 
-//@ManagedBean(name="beanproductos")
-//@ViewScoped
+import py.pol.una.ii.pw.data.ProveedorRepository;
+
+import javax.faces.bean.ApplicationScoped;
+
+@ManagedBean(name="beanproductos")
 @Path("/productos")
-@RequestScoped
+@ApplicationScoped
 public class ProductoResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
      //        type=PersistenceContextType.TRANSACTION)
 	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em; 
+	
+    LazyDataModel<Producto> lazyModel ;
+    
+    public LazyDataModel<Producto> getLazyModel() {
+        return lazyModel;
+    }
+
+    public void setLazyModel(LazyDataModel<Producto> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
+
+	
+	private List<Proveedor> proveedores;
+	private long identi;
+	public long getIdenti() {
+		return identi;
+	}
+	public void setIdenti(long identi) {
+		this.identi = identi;
+	}
+
+	private String detalle;
+	private int precio;
+	
+	@Inject
+    private ProveedorRepository repo;
+	
+	public List<Proveedor> getProveedores() {
+		return proveedores;
+	}
+	public void setProveedores(List<Proveedor> proveedores) {
+		this.proveedores = proveedores;
+	}
+
+	private Proveedor proveedor;
+	private int stock;
+	private long identificador;
+	
+    public long getIdentificador() {
+		return identificador;
+	}
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+	public String getDetalle() {
+		return detalle;
+	}
+	public void setDetalle(String detalle) {
+		this.detalle = detalle;
+	}
+	public int getPrecio() {
+		return precio;
+	}
+	public void setPrecio(int precio) {
+		this.precio = precio;
+	}
+	public Proveedor getProveedor() {
+		return proveedor;
+	}
+	public void setProveedor(Proveedor proveedor) {
+		this.proveedor = proveedor;
+	}
+	public int getStock() {
+		return stock;
+	}
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+	
 	
     @Inject
     private Logger log;
@@ -127,15 +203,18 @@ public class ProductoResourceRESTService {
     @Path("/crear/{descripcion}/{precio}/{stock}/{proveedor}")
     
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createProveedor(@PathParam("descripcion")String des,@PathParam("precio")int precio,@PathParam("stock")int stock, @PathParam("proveedor")Long proveedor) {
+    public Response createProducto(ActionEvent event) {
     	Producto producto;
     	producto= new Producto();
-    	producto.setDetalle(des);
+    	producto.setDetalle(detalle);
     	producto.setPrecio(precio);
-    	producto.setStock(0);
-    	Proveedor prov= em.find(Proveedor.class, proveedor);
+    	producto.setStock(stock);
+    	Proveedor prov= em.find(Proveedor.class, identi);
     	producto.setProveedor(prov);
         Response.ResponseBuilder builder = null;
+        detalle="";
+        precio=0;
+        stock=0;
 
         try {
             // Validates member using bean validation
@@ -162,6 +241,7 @@ public class ProductoResourceRESTService {
 
         return builder.build();
     }
+
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -176,14 +256,36 @@ public class ProductoResourceRESTService {
      //@Consumes(MediaType.APPLICATION_JSON)
      @Produces(MediaType.APPLICATION_JSON)
      @Path("/modificar/{id}/{detalle}/{precio}/{proveedor}")
-     
-    public Response modificarProducto(@PathParam("id")Long id,@PathParam("detalle")String des,@PathParam("precio")int precio,@PathParam("proveedor") Long proveedor) {
+    
+    public void obtenerProducto(Long id){
     	Producto producto= buscar(id);
-    	producto.setDetalle(des);
-    	Proveedor prov= em.find(Proveedor.class, proveedor);
+    	identificador = id;
+    	detalle = producto.getDetalle();
+    	precio = producto.getPrecio();
+    	proveedor = producto.getProveedor();
+    
+    	System.out.println(proveedor.getDescripcion());
+    	
+    }
+    
+    public void prueba(ActionEvent event){
+    	System.out.print(identi);
+    	System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    	
+    }
+     
+    public Response modificarProducto(ActionEvent event) {
+    	Producto producto= buscar(identificador);
+    	producto.setDetalle(detalle);
+    	Proveedor prov= em.find(Proveedor.class, identi);
     	producto.setProveedor(prov);
     	producto.setPrecio(precio);
     	//proveedor.setId(n);
+    	detalle="";
+    	precio=0;
+    	stock=0;
+    	
+    	
         Response.ResponseBuilder builder = null;
 
         try {
@@ -213,6 +315,8 @@ public class ProductoResourceRESTService {
     }
 
 
+    
+
     /*****************************Eliminar***********************************************/
     @DELETE
     @Path("/eliminar/{id:[0-9][0-9]*}")
@@ -239,7 +343,6 @@ public class ProductoResourceRESTService {
         return em.find(Producto.class, id);
        
     }
-
   
 
 
@@ -296,7 +399,7 @@ public class ProductoResourceRESTService {
     {
     	
 
-        String outputFile = "/home/sonia/Desktop/ArchivoClientes.csv";
+        String outputFile = "/home/sonia/Desktop/ArchivoProductos.csv";
         boolean alreadyExists = new File(outputFile).exists();
          
         if(alreadyExists){
@@ -400,5 +503,11 @@ public class ProductoResourceRESTService {
         return cantidad;
     }
     
+    @PostConstruct
+    public void init(){
+    	proveedores = repo.findAllOrderedByDescripcion();
+        lazyModel = new ProductoLazyList();
+        lazyModel.setRowCount(lazyModel.getRowCount());   
+    }
 
 }

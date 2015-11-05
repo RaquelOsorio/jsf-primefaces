@@ -10,12 +10,14 @@
 
 		<h2><center>Lista de Productos</center></h2>
 		<h:form>
-		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
-		</h:form>
+	  	
+		<h:commandButton action="crearProducto" value="Nuevo Producto" title="Nuevo Producto" />
+		</h:form>  
+		<p></p>
 		<p></p>
 		
 <h:form id="form">
-                    <p:dataTable var="prod" value="#{producto.lazyModel}" rows="10" paginator="true"
+                    <p:dataTable id= "tabla" var="prod" value="#{beanproductos.lazyModel}" rows="10" paginator="true"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="1,5,10" lazy="true">
 
@@ -25,24 +27,26 @@
                         <p:column headerText="Stock" sortBy="#{prod.stock}" filterBy="#{prod.stock}">
                             <h:outputText value="#{prod.stock}"/>
                         </p:column>
-                        <p:column headerText="Precio" sortBy="#{prod.precio}" filterBy="#{prod.precio}">
-                            <h:outputText value="#{prod.precio}"/>
-                        </p:column>
+                        
                         <p:column headerText="Proveedor" sortBy="#{prod.proveedor.descripcion}" filterBy="#{prod.proveedor.descripcion}">
                             <h:outputText value="#{prod.proveedor.descripcion}"/>
                         </p:column>
-                       <!--   <p:column>
-                            <h:commandButton action="#{producto.deleteProveedor(prod.id)}" value="Eliminar" ></h:commandButton>
-                        </p:column>
-                        <p:column>
-                            <h:commandButton action="#{producto.seleccionarUnProveedor(prod.id)}" value="Modificar"></h:commandButton>
-                        </p:column> -->
+                       <p:column>
+                            <p:commandButton actionListener="#{beanproductos.removeProducto(prod.id)}" value="Borrar" image="ui-icon-trash" update="tabla" />
+                            <p:commandButton actionListener="#{beanproductos.obtenerProducto(prod.id)}" value="Modificar" image="ui-icon-pencil" action="modificarProducto"/> 
+                 </p:column>
                     </p:dataTable>
-                   
+                   <p></p>
                     <center>
                         <p:commandButton value="Exportar a CSV" 
-                                         action="#{lazyProductoModel.exportarCSV}" image="ui-icon-document"/>
+                                         action="#{beanproductos.exportarCSV()}" image="ui-icon-document"/>
                     </center>
+                    
+                    <h:commandLink value= "Exportar">    
+                        
+                        <p:dataExporter type="csv" target="tabla" fileName="producto" postProcessor="#{beanproductos.exportarCSV()}" />  
+                    </h:commandLink> 
+                    
                 </h:form>
 
 	</ui:define>

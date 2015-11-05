@@ -8,7 +8,12 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+
 import javax.annotation.PostConstruct;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
@@ -34,7 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.jasperreports.engine.JRException;
-import py.pol.una.ii.pw.controller.ClienteLazyList;
+
 import py.pol.una.ii.pw.data.FacturaRepository;
 import py.pol.una.ii.pw.model.Factura;
 import py.pol.una.ii.pw.model.Proveedor;
@@ -129,6 +134,7 @@ public class FacturaResourceRESTService {
     		}
     	}	
   }
+
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/detener") 
@@ -144,7 +150,15 @@ public class FacturaResourceRESTService {
   }
   
 
-  
+
+    public void mensaje() {
+    	if (est){
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "No existe proceso de facturación corriendo."));
+    	}else{
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "El proceso de facturación aún está corriendo."));
+    		
+    	}
+    }
 
     /*****************************Eliminar***********************************************/
     @DELETE
