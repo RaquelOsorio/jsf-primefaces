@@ -7,60 +7,37 @@
 	xmlns:p="http://primefaces.org/ui"
 	template="./default.xhtml">
 	<ui:define name="content">
-
 		<h2><center>Lista de Ventas</center></h2>
+		<h:form>
 		
-	 <h:form id="form">
-	           <p:growl id="growl" showDetail="true" />
-	            <p:dataTable id="tablaVenta" caseSensitiveSort="true"
-	                         emptyMessage="Ningun elemento encontrado"
-	                         selection="#{venta.venta}" selectionMode="single" 
-	                rowsPerPageLabel="Filas" var="det" value="#{ventaList.lazyModel}" rows="10" paginator="true"
-	                         
-	                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-	                         rowsPerPageTemplate="1,5,10" lazy="true">
-	                 <p:growl id="growl" showDetail="true" />
-	                <p:column headerText="Fecha" sortBy="#{det.fecha}">
-	                    
-	                    <h:outputText value="#{det.fecha}">
-	                            <f:convertDateTime pattern="dd-MM-yyyy" />
-	                    </h:outputText>
-	                </p:column>
-	               
-	                <p:column headerText="Cliente" sortBy="#{det.cliente.nombre}" filterBy="#{det.cliente.nombre}">
-	                    <h:outputText value="#{det.cliente.nombre}" />
-	                </p:column>
-	 <!--               <f:facet name="footer">
-	            <p:commandButton process="tablaVenta" update=":mainForm:form:display" icon="ui-icon-search" value="Ver" oncomplete="PF('ventaDialog').show()" />
-	        </f:facet> -->
-	            </p:dataTable>
-	           
-	 <!--           <p:dialog closeOnEscape="true"   header="Detalles de la venta" widgetVar="ventaDialog" resizable="true"  width="200"
-	                      modal="true">  
-	  
-	        <p:outputPanel id="display" style="text-align:center;">
-	            
-	                <f:facet name="header">
-	                     <h:outputText value="Venta" />
-	                </f:facet>
-	 
-	                <h:outputText value="Fecha:" />
-	                <h:outputText value="#{venta.venta.fecha}" >
-	                    <f:convertDateTime pattern="dd-MM-yyyy" />
-	                </h:outputText>
-	                <ui:repeat value="#{venta.venta.detalleVentaList}" var="det">
-	                    <h:outputText value="#{det.producto.nombre} - #{det.cantidad}" style="display:block"/>
-	            </ui:repeat>
-	                 <h:outputText value="Total:" />
-	                <h:outputText value="#{venta.venta.total}" />
-	           
-	        </p:outputPanel>
-	    </p:dialog>   -->
-	           <center>
-	             <p:commandButton value="Exportar a CSV" 
-	                              action="#{lazyVentasModel.exportarCSV}" image="ui-icon-document"/>
-	           </center>
-	        </h:form>
+		<h:commandButton action="crearVenta" value="Nueva Venta" title="Nueva Venta" />
+		<div align="right"><h:commandButton action="#{beanventa.cargaMasiva}" value="Carga Masiva"/>
+		</div>
+		</h:form>
+        <p:dataTable var="cli" value="#{beanventa.listAllVenta_Cab()}">
+ 
+    		<p:column headerText="Id">
+       			 <h:outputText value="#{cli.id}" />
+    		</p:column>
+ 
+    		<p:column headerText="Fecha">
+        		<p:commandLink  actionListener="#{beanventadet.listAllProductosByCabecera(cli.id,cli.cliente.nombre)}" action="detalleVenta">
+        			<h:outputText value="#{cli.fecha}" />
+    			</p:commandLink> 
+    		</p:column>
+ 
+    		<p:column headerText="Cliente">
+        		<h:outputText value="#{cli.cliente.nombre}" />
+    		</p:column>
+    <!--  		<p:column headerText="Operacion">
+    			
+    			<p:commandButton action="#{cli.id}" value="Eliminar" image="ui-icon-trash"/>
+    			<p:commandButton action="#{cli.id}" value="Modificar" image="ui-icon-pencil"/>
+            </p:column>   -->
+ 		</p:dataTable>
+ 				<p></p>
+    			
+
 
 	</ui:define>
 </ui:composition>

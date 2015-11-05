@@ -31,9 +31,11 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -81,7 +83,17 @@ import java.net.MalformedURLException;
 //@RequestScoped
 public class ClienteResourceRESTService {
 	
-	
+	private String mensaje;
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+
+
+
 	private String nombre;
 	private String apellido;
 	private long identificador;
@@ -141,7 +153,7 @@ public class ClienteResourceRESTService {
 
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Clientes> listAllProveedores() {
+    public List<Clientes> listAllClientes() {
         return repository.findAllOrderedByNombre();
     }
 
@@ -296,8 +308,9 @@ public class ClienteResourceRESTService {
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public String cargaMasiva() throws IOException {
-        return registration.cargaMasiva("/home/viviana/jsf-primefaces/cliente.txt");
+    public void cargaMasiva() throws IOException {
+        mensaje = registration.cargaMasiva("/home/shaka/pfff/jsf-primefaces/cliente.txt");
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, mensaje, "PrimeFaces Rocks."));
     }
     
     /*************************Exportar Cliente***************************************************/

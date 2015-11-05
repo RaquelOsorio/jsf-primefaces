@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
+//import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
@@ -31,28 +33,40 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-
 import py.pol.una.ii.pw.data.Venta_DetRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
-import py.pol.una.ii.pw.model.Venta_Cab;
 import py.pol.una.ii.pw.model.Venta_Det;
-import py.pol.una.ii.pw.service.FiltersObject;
+
+//import javax.ejb.EJBTransactionRolledbackException;
+//import javax.ejb.EJB;
+//import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_DetRegistration;
 
-//@ManagedBean(name="beanventadet")
-//@ViewScoped
-@Path("/venta_Det")
+@ManagedBean(name="beanventadet")
 @RequestScoped
 public class Venta_DetResourceRESTService {
 	@PersistenceContext(unitName="PersistenceApp")
 	private EntityManager em;
+
+	public List<Venta_Det> getListaDetalle() {
+		return listaDetalle;
+	}
+
+	public void setListaDetalle(List<Venta_Det> listaDetalle) {
+		this.listaDetalle = listaDetalle;
+	}
+	
+	private String nombreCliente;
+
+	public String getNombreCliente() {
+		return nombreCliente;
+	}
+
+	public void setNombreCliente(String nombreCliente) {
+		this.nombreCliente = nombreCliente;
+	}
 
 	@Inject
     private Logger log;
@@ -66,7 +80,7 @@ public class Venta_DetResourceRESTService {
     @Inject
     Venta_DetRegistration registration;
 
- //   static List<Venta_Cab> ventas;
+    private List<Venta_Det> listaDetalle;
 
     
     @GET
@@ -88,11 +102,12 @@ public class Venta_DetResourceRESTService {
 
 
     /****************************Listar por cabecera******************************/
-    @GET
-    @Path("/listar/{cab:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Venta_Det> listAllProductosByCabecera(@PathParam("cab") long idcab) {
-        return repository.findAllByCabecera(idcab);
+ //   @GET
+  //  @Path("/listar/{cab:[0-9][0-9]*}")
+   // @Produces(MediaType.APPLICATION_JSON)
+    public void listAllProductosByCabecera( long idcab,String cliente) {
+        listaDetalle = repository.findAllByCabecera(idcab);
+        nombreCliente = cliente;
     }
 
     /****************************Crear*********************************************
@@ -157,9 +172,9 @@ public class Venta_DetResourceRESTService {
 
         return builder.build();
     }
-    @GET
+  //  @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
+    //@Path("{id}")
     public Venta_Det buscar(Long id) {
         return em.find(Venta_Det.class, id);
        
@@ -244,40 +259,6 @@ public class Venta_DetResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
-//  
-//    //////////////////////////////////////////////////////////
-//    //Filtrado
-//    //////////////////////////////////////////////////////////
-//    @GET
-//    @Path("/filtrar/{param}")
-//    public Response filtrar(@PathParam("param") String content){
-//        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-//        //Gson gson = new Gson();
-//        Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-//        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-//        ventas = registration.filtrar(filtros);
-//        Gson objetoGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd").create();
-//        if (this.ventas.isEmpty()) {
-//            return Response
-//                    .status(200)
-//                    .entity("[]").build();
-//        } else {
-//            return Response
-//                    .status(200)
-//                    .entity(objetoGson.toJson(ventas)).build();
-//        }
-//    }
-//    
-//    @GET
-//    @Path("/filtrarCantidad/{param}")
-//    public int filtrarCantidadRegistros(@PathParam("param") String content){
-//        Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-//        //Gson gson = new Gson();
-//            Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-//
-//        FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-//        int cantidad = registration.filtrarCantidadRegistros(filtros);
-//        return cantidad;
-//    }
+    
     
 }

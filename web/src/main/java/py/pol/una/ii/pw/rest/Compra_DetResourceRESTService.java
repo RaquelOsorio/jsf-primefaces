@@ -65,6 +65,7 @@ import py.pol.una.ii.pw.service.Compra_DetRegistration;
 //@ManagedBean(name="beancompradet")
 //@ViewScoped
 @Path("/compradetalle")
+@ManagedBean(name="beancompradet")
 @RequestScoped
 public class Compra_DetResourceRESTService {
 	// @PersistenceContext(unitName="ProductosService", 
@@ -86,8 +87,32 @@ public class Compra_DetResourceRESTService {
     @Inject
     Compra_DetRegistration registration;
     
+ private List<Compra_Det> listaDetalle;
+    
+    private String nombreProveedor;
+    
    
-    /***************************Listar todo****************************************/	
+    public List<Compra_Det> getListaDetalle() {
+		return listaDetalle;
+	}
+
+
+	public void setListaDetalle(List<Compra_Det> listaDetalle) {
+		this.listaDetalle = listaDetalle;
+	}
+
+
+	public String getNombreProveedor() {
+		return nombreProveedor;
+	}
+
+
+	public void setNombreProveedor(String nombreProveedor) {
+		this.nombreProveedor = nombreProveedor;
+	}
+
+
+	/***************************Listar todo****************************************/	
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/todas")
@@ -109,11 +134,12 @@ public class Compra_DetResourceRESTService {
         return detalle;
     }
     /****************************Listar por cabecera******************************/
-    @GET
-    @Path("/listar/{cab:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Compra_Det> listAllProductosByCabecera(@PathParam("cab") long idcab) {
-        return repository.findAllByCabecera(idcab);
+    //@GET
+    //@Path("/listar/{cab:[0-9][0-9]*}")
+    //@Produces(MediaType.APPLICATION_JSON)
+    public void listAllProductosByCabecera( long idcab, String proveedor) {
+        listaDetalle = repository.findAllByCabecera(idcab);
+        nombreProveedor = proveedor;
     }
 
     /**

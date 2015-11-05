@@ -1,23 +1,7 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package py.pol.una.ii.pw.rest;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,8 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.ejb.EJBTransactionRolledbackException;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -48,26 +38,91 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.data.Compra_CabRepository;
 import py.pol.una.ii.pw.model.Compra_Cab;
 import py.pol.una.ii.pw.model.Compra_Det;
-import py.pol.una.ii.pw.model.DetalleCompra;
 import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.Compra_CabRegistration;
 import py.pol.una.ii.pw.service.Compra_DetRegistration;
+import py.pol.una.ii.pw.service.ProductoRegistration;
+
 
 @Path("/cabeceras")
-@RequestScoped
+//@RequestScoped
 
-/*@ManagedBean(name="beancompras")
-@ViewScoped*/
+@ManagedBean(name="beancompra")
+@ViewScoped
 public class Compra_CabResourceRESTService {
+	
+/*	private List<Compra_Cab> compraFilteringList;
+	
+	public List<Compra_Cab> getClientesFilteringList() {
+	return compraFilteringList;
+	}
+	public void setClientesFilteringList(List<Compra_Cab> clientesFilteringList) {
+	this.compraFilteringList = clientesFilteringList;
+	}*/
+	
+	@Inject
+    ProductoRegistration pr;
+	private String mensaje;
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+
+	private Producto producto;
+	private int cantidad;
+	private Integer [] cantidades = new Integer[100];
+
+	//private List<Integer> cantidades = new ArrayList(100);
+	private long identificador;
+	private List<Producto> listaProductos;
+	
+	
+	@Inject
+	ProductoResourceRESTService productoManager;
+	
+
+	public long getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+
+	private Proveedor proveedor;
+	
+	public Proveedor getProveedor() {
+		return proveedor;
+	}
+
+	public void setProveedor(Proveedor proveedor) {
+		this.proveedor = proveedor;
+	}
+
+	public Producto getProducto() {
+		return producto;
+	}
+
+	public void setProducto(Producto producto) {
+		this.producto = producto;
+	}
+
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	private List<Compra_Det> detalle;
 	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
 	
@@ -86,9 +141,10 @@ public class Compra_CabResourceRESTService {
     @Inject
     Compra_DetRegistration registrationdetalle;
 
-    private List<Compra_Cab> compras;
 
-    List <Compra_Det> listadetalle;
+    private List <Compra_Det> listadetalle;
+    private List<Compra_Det>[] vector;
+   
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -106,39 +162,91 @@ public class Compra_CabResourceRESTService {
         }
         return cabecera;
     }
-
-    /****************************Crear Compras********************************************/
     
+    /****************************Cargar Productos******************************************/
+    
+    public void cargarProductos(ActionEvent event){
+    	
+    	listaProductos = productoManager.listaPorProveedores(identificador);
+    	
+    }
 
-    public String agregarCabecera(Proveedor proveedor){
+    public Integer[] getCantidades() {
+		return cantidades;
+	}
+
+	public void setCantidades(Integer[] cantidades) {
+		this.cantidades = cantidades;
+	}
+
+	public List<Producto> getListaProductos() {
+		return listaProductos;
+	}
+
+	public void setListaProductos(List<Producto> listaProductos) {
+		this.listaProductos = listaProductos;
+	}
+
+	/****************************Crear Compras********************************************/
+    
+    /*@POST
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/crear/{proveedor}")*/
+   // public void create(Compra_Cab compra) {
+       
+        
+      
+     //}
+    public void agregarCabecera(long id){
+    	Proveedor prov= em.find(Proveedor.class, id);
     	Compra_Cab newCabecera= new Compra_Cab();
-    	newCabecera.setProveedor(proveedor);
+    	newCabecera.setProveedor(prov);
     	newCabecera.setDetalleCompraList(listadetalle);
+    	
     	 try {
          	
  			registration.registrarCompra(newCabecera);
- 		}catch(EJBTransactionRolledbackException e)
-         {
-            
-            System.out.println("CANTIDAD NEGATIVA!!!!");
-            return "Error, cantidad menor o igual a cero";
-
-      }	 catch (Exception e) {
+ 		} catch (Exception e) {
  			// TODO Auto-generated catch block
  			e.printStackTrace();
- 			return "Hubo un error";
  		}
-    	 return "Exito";
     	 
      }
     
-    public void agregarDetalle(Producto producto, int cantidad){
-    	Compra_Det newDetalle= new Compra_Det();
-    	newDetalle.setProducto(producto);
+    public void agregarDetalle(long id) throws Exception{
+    	
+    	Producto produ;
+    	produ= em.find(Producto.class, id);
+		Compra_Det newDetalle= new Compra_Det();
+		newDetalle.setProducto(produ);	
     	newDetalle.setCantidad(cantidad);
     	listadetalle.add(newDetalle);
-    	 
+    //	produ.setStock(produ.getStock()+cantidad);
+    //	pr.modificar(produ);
+    //	System.out.println(algo);
+    	System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    	System.out.println(cantidad);
+    	cantidad=0;
+    	
+    	 	
      }
+    @PostConstruct
+    public void init(){
+    	listadetalle = new ArrayList<Compra_Det>();
+    	listaProductos = new ArrayList<Producto>();
+    }
+    
+    
+    public List<Compra_Det> getListadetalle() {
+		return listadetalle;
+	}
+
+	public void setListadetalle(List<Compra_Det> listadetalle) {
+		this.listadetalle = listadetalle;
+	}
+
+	
     
 
 
@@ -175,19 +283,9 @@ public class Compra_CabResourceRESTService {
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public String cargaMasiva() throws IOException {
-    	try{
-    		return registration.cargaMasiva("/home/viviana/jsf-primefaces/compras.txt");
-    	}catch(EJBTransactionRolledbackException e)
-        {
-            
-                System.out.println("CANTIDAD NEGATIVA!!!!");
-                return "Error, cantidad menor o igual a cero";
-
-            
-
-          }	
-    		//return "exito";
+    public void cargaMasiva() throws IOException {
+        mensaje= registration.cargaMasiva("/home/shaka/pfff/jsf-primefaces/compras.txt");
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, mensaje, "PrimeFaces Rocks."));
     }
     
     
@@ -239,41 +337,6 @@ public class Compra_CabResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
-    
-    //////////////////////////////////////////////////////////
-   //Filtrado
-   //////////////////////////////////////////////////////////
-   @GET
-   @Path("/filtrar/{param}")
-   public Response filtrar(@PathParam("param") String content){
-       Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-       //Gson gson = new Gson();
-       Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-       FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-       compras = registration.filtrar(filtros);
-       Gson objetoGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd").create();
-       if (this.compras.isEmpty()) {
-           return Response
-                   .status(200)
-                   .entity("[]").build();
-       } else {
-           return Response
-                   .status(200)
-                   .entity(objetoGson.toJson(compras)).build();
-       }
-   }
-   
-   @GET
-   @Path("/filtrarCantidad/{param}")
-   public int filtrarCantidadRegistros(@PathParam("param") String content){
-       Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-       //Gson gson = new Gson();
-           Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-
-       FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-       int cantidad = registration.filtrarCantidadRegistros(filtros);
-       return cantidad;
-   }
 
     /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the

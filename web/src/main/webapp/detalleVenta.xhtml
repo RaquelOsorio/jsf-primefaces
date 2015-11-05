@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+		<center><h2>Detalle de la Venta</h2>
+		<p>Cliente:<font color ="green"> #{beanventadet.nombreCliente}</font></p>
+		</center>
+		<center>	
+        <p:dataTable style="width:300px;" var="pro" value="#{beanventadet.listaDetalle}">
+ 
+ 
+    		<p:column headerText="Producto">
+        		<h:outputText value="#{pro.producto.detalle}" />
+    		</p:column>
+ 
+    		<p:column headerText="Cantidad">
+        		<h:outputText value="#{pro.cantidad}" />
+    		</p:column>
+ 		</p:dataTable>
+ 		<p></p><p></p>
+ 		<p:link outcome="ventasList" value="Atras"/>
+ 		</center>
+ 		
+    			
+
+
+	</ui:define>
+</ui:composition>

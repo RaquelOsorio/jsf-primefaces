@@ -10,22 +10,16 @@
 
 		<h2><center>Lista de Proveedores</center></h2>
 		<h:form>
-		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		<h:commandButton action="crearProveedor" value="Nuevo Proveedor" title="Nuevo Proveedor" />
 		</h:form>
 		<p></p>
 		
 	
 	<h:form id="form">
                     <p:dataTable id="tabla" var="p" value="#{proveedor.lazyModel}" rows="10" paginator="true"
-                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="1,5,10" lazy="true">
 
-						<f:facet name="{Exporters}">
-							 <h:commandLink value="Exportar a CSV" image="ui-icon-document">
-				                
-				                <p:dataExporter type="csv" target="tabla" fileName="compras" />
-				            </h:commandLink>
-						</f:facet>
 
                         <p:column headerText="Id" sortBy="#{p.id}" filterBy="#{p.id}">
                             <h:outputText value="#{p.id}"/>
@@ -33,19 +27,14 @@
                         <p:column headerText="Descripcion" sortBy="#{p.descripcion}" filterBy="#{p.descripcion}">
                             <h:outputText value="#{p.descripcion}"/>
                         </p:column>
-                        
-                      <!--   <p:column>
-                            <h:commandButton action="#{proveedor.deleteProveedor(prov.id)}" value="Eliminar" ></h:commandButton>
-                        </p:column>
-                        <p:column>
-                            <h:commandButton action="#{proveedor.seleccionarUnProveedor(prov.id)}" value="Modificar"></h:commandButton>
-                        </p:column> -->
+                      <p:column>
+    			
+    						<h:commandButton action="#{beanproveedores.removeProvider(p.id)}" value="Eliminar" />
+    						<p:commandButton actionListener="#{beanproveedores.obtenerProveedor(p.id)}" value="Modificar" image="ui-icon-pencil" action="modificarProveedor"/>
+            		</p:column>
                     </p:dataTable>
                     
-                    <center>
-                        <p:commandButton value="Exportar a CSV" 
-                                         action="#{proveedorLazyList.exportarCSV}" image="ui-icon-document"/>
-                    </center>
+                    
                 </h:form>
 
 	</ui:define>

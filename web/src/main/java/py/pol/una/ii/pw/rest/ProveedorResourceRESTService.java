@@ -29,8 +29,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -51,12 +55,17 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.primefaces.model.LazyDataModel;
+
 import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import py.pol.una.ii.pw.controller.ClienteLazyList;
+import py.pol.una.ii.pw.controller.ProveedorLazyList;
 import py.pol.una.ii.pw.data.ProveedorRepository;
+import py.pol.una.ii.pw.model.Clientes;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Page;
 import py.pol.una.ii.pw.model.Proveedor;
@@ -68,13 +77,42 @@ import py.pol.una.ii.pw.service.ProveedorRegistration;
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
+@ManagedBean(name="beanproveedores")
 @Path("/proveedores")
-@RequestScoped
+@ApplicationScoped
 public class ProveedorResourceRESTService {
     
+	
+	private String descripcion;
+
+    public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+private long identificador;
+    
+	public long getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+	
 	@PersistenceContext(unitName="PersistenceApp")
     private EntityManager em;
+	
+	LazyDataModel<Proveedor> lazyModel ;
     
+	public LazyDataModel<Proveedor> getLazyModel() {
+		return lazyModel;
+	}
+	public void setLazyModel(LazyDataModel<Proveedor> lazyModel) {
+		this.lazyModel = lazyModel;
+	}
+
 	@Inject
     private Logger log;
 
@@ -128,11 +166,12 @@ public class ProveedorResourceRESTService {
     @Path("/crear/{descripcion}")
     
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createProveedor(@PathParam("descripcion")String des) {
+    public Response createProveedor(ActionEvent event) {
     	
     	Proveedor proveedor;
     	proveedor= new Proveedor();
-    	proveedor.setDescripcion(des);
+    	proveedor.setDescripcion(descripcion);
+    	descripcion="";
     	//proveedor.setId(n);
         Response.ResponseBuilder builder = null;
 
@@ -175,10 +214,17 @@ public class ProveedorResourceRESTService {
      //@Consumes(MediaType.APPLICATION_JSON)
      @Produces(MediaType.APPLICATION_JSON)
      @Path("/modificar/{id}/{des}")
-     
-    public Response modificarProveedor(@PathParam("id")Long id,@PathParam("des")String des) {
+    
+    public void obtenerProveedor(Long id){
     	Proveedor proveedor= buscar(id);
-    	proveedor.setDescripcion(des);
+    	identificador = id;
+    	descripcion = proveedor.getDescripcion();
+    }
+     
+    public Response modificarProveedor(ActionEvent event) {
+    	Proveedor proveedor= buscar(identificador);
+    	proveedor.setDescripcion(descripcion);
+    	descripcion="";
     	//proveedor.setId(n);
         Response.ResponseBuilder builder = null;
 
@@ -364,6 +410,14 @@ public class ProveedorResourceRESTService {
         } catch (NoResultException e) {
             // ignore
         }
-        return member != null;
+        return 
+        member != null;
     }*/
+    
+    
+    @PostConstruct
+    public void init(){
+        lazyModel = new ProveedorLazyList();
+        lazyModel.setRowCount(lazyModel.getRowCount());  
+    }
 }

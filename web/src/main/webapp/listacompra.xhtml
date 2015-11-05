@@ -6,55 +6,37 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui"
 	template="./default.xhtml">
+	<!-- esta ya esta todo  -->
 	<ui:define name="content">
-
 		<h2><center>Lista de Compras</center></h2>
 		<h:form>
-		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		<h:commandButton action="crearCompra" value="Nueva Compra" title="Nueva Compra" />
 		</h:form>
-		<p></p>
-		
-	<h:form>
-	
-	<p:dataTable id="tabla" caseSensitiveSort="true"
-                  	 emptyMessage="Ningun elemento encontrado" value="#{beancompras.listAllCompra_Cab()}" filteredValue="#{beancompras.compra_CabFilteringList}" var="a"
-					widgetVar="tableCarWV" rowsPerPageLabel="Filas" 
-                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                 	 paginator="true" rows="10" style="margin-bottom:20px" 
-                 	 rowsPerPageTemplate="1,5">
-		<f:facet name="{Exporters}">
-			 <h:commandLink value="Exportar a CSV" image="ui-icon-document">
-                
-                <p:dataExporter type="csv" target="tabla" fileName="compras" />
-            </h:commandLink>
-		</f:facet>
-		<p:column filterBy="#{a.id}" sortBy="#{a.id}" filterMatchMode="contains" headerText="Id" footerText="contains" >
-			<!-- #{c.id} --><h:outputText value="#{a.id}" />
-		</p:column>
-
-		<p:column sortBy="#{a.fecha}" filterMatchMode="contains" headerText="Fecha" footerText="contains" >
-			<!-- #{c.nombre} --><h:outputText value="#{a.fecha}" >
-				<f:convertDateTime pattern="dd-MM-yyyy" />
-				</h:outputText>
-		</p:column>
-		
-		<p:column filterBy="#{a.proveedor.descripcion}" sortBy="#{a.proveedor.descripcion}" filterMatchMode="contains" headerText="Proveedor" footerText="contains" >
-			<!-- #{c.apellido} --><h:outputText value="#{a.proveedor.descripcion}" />
-		</p:column>
-
-   		<!-- <p:column headerText="Eliminar">
+        <p:dataTable var="cli" value="#{beancompras.listAllCabeceras()}">
+ 
+    		<p:column headerText="Id">
+       			 <h:outputText value="#{cli.id}" />
+    		</p:column>
+ 
+    		<p:column headerText="Fecha">
+    			<p:commandLink  actionListener="#{beancompradet.listAllProductosByCabecera(cli.id,cli.proveedor.descripcion)}" action="detalleCompra">
+        			<h:outputText value="#{cli.fecha}" />
+    			</p:commandLink> 
+    		</p:column>
+ 
+    		<p:column headerText="Proveedor">
+        		<h:outputText value="#{cli.proveedor.descripcion}" />
+    		</p:column>
+   <!--   		<p:column headerText="Operacion">
     			
-				<p:commandButton actionListener="#{a.id}" value="Eliminar" image="ui-icon-trash" update="tabla">
-					<p:confirm header="Confirmation" message="¿Desea eliminar la compra?" icon="ui-icon-alert" />
-    			</p:commandButton>
-    			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-       				 <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        			 <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    			</p:confirmDialog>
-    	</p:column> -->
-		</p:dataTable>
-		
-	</h:form>
+    			<p:commandButton action="#{cli.id}" value="Eliminar" image="ui-icon-trash"/>
+    			<p:commandButton action="#{cli.id}" value="Modificar" image="ui-icon-pencil"/>
+            </p:column>   -->
+            
+ 		</p:dataTable>
+ 				<p></p>
+    			
+
 
 	</ui:define>
 </ui:composition>

@@ -1,7 +1,7 @@
 package py.pol.una.ii.pw.rest;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,27 +9,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import javax.annotation.PostConstruct;
 //import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -50,25 +38,77 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import py.pol.una.ii.pw.data.Venta_CabRepository;
 import py.pol.una.ii.pw.model.Clientes;
+import py.pol.una.ii.pw.model.Compra_Cab;
+import py.pol.una.ii.pw.model.Compra_Det;
+import py.pol.una.ii.pw.model.Producto;
 import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.model.Venta_Cab;
-import py.pol.una.ii.pw.service.FiltersObject;
+import py.pol.una.ii.pw.model.Venta_Det;
+import py.pol.una.ii.pw.service.ProductoRegistration;
 //import javax.ejb.EJBTransactionRolledbackException;
 //import javax.ejb.EJB;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-//@ManagedBean(name="beanventas")
-//@ViewScoped
+import javax.swing.JOptionPane;
+
 @Path("/ventas")
-@RequestScoped
+//@RequestScoped
+@ManagedBean(name="beanventa")
+@ViewScoped
 public class Venta_CabResourceRESTService {
+	@Inject
+    ProductoRegistration pr;
+	
+	private String mensaje;
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+	
+	@Inject
+	ProductoResourceRESTService productoManager;
+	private long identificador;
+	private int cantidad;
+	private List<Producto> listaProductos;
+	private List<Venta_Det> listadetalle;
+
+	public List<Venta_Det> getListadetalle() {
+		return listadetalle;
+	}
+
+	public void setListadetalle(List<Venta_Det> listadetalle) {
+		this.listadetalle = listadetalle;
+	}
+
+	public long getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public List<Producto> getListaProductos() {
+		return listaProductos;
+	}
+
+	public void setListaProductos(List<Producto> listaProductos) {
+		this.listaProductos = listaProductos;
+	}
 
 	@PersistenceContext(unitName="PersistenceApp") 
 	private EntityManager em;
@@ -85,12 +125,16 @@ public class Venta_CabResourceRESTService {
     @Inject
     Venta_CabRegistration registration;
 
-   static List<Venta_Cab> ventas;
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Venta_Cab> listAllVenta_Cab() {
         return repository.findAllOrderedByVenta_Cab();
+    }
+    
+    @PostConstruct
+    public void init(){
+    	listadetalle = new ArrayList<Venta_Det>();
+    	
     }
 
     @GET
@@ -106,34 +150,62 @@ public class Venta_CabResourceRESTService {
 
     /****************************Crear Ventas********************************************/
     
-    @POST
+    /*@POST
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crear/{cliente}")
-    public String create(Venta_Cab cab) {
+    public void create(Venta_Cab cab) {
         try {
         	
-        	registration.registrarVenta(cab);
-			
-		}catch(EJBTransactionRolledbackException e)
-        {
-            
-            System.out.println("CANTIDAD NEGATIVA!!!!");
-            return "Hubo un error de transaccion";
-
-        
-
-        } catch (Exception e) {
+			registration.registrarVenta(cab);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-        	e.printStackTrace();
-        	return "Hubo un error";
-			//
-			
+			e.printStackTrace();
 		}
-        return "Hubo un error";
+        
       
+     }*/
+    
+    public void agregarCabecera(long id){
+    	Clientes clie= em.find(Clientes.class, id);
+    	Venta_Cab newCabecera= new Venta_Cab();
+    	newCabecera.setCliente(clie);
+    	newCabecera.setDetalleVenta(listadetalle);
+    	
+    	 try {
+    		 
+         	
+ 			registration.registrarVenta(newCabecera);
+ 		} catch (Exception e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+    	 
      }
+    public void agregarDetalle(long id) throws Exception{
+    	
+    	Producto produ;
+    	produ= em.find(Producto.class, id);
+		Venta_Det newDetalle= new Venta_Det();
+		newDetalle.setProducto(produ);	
+    	newDetalle.setCantidad(cantidad);
+    	listadetalle.add(newDetalle);
+   // 	produ.setStock(produ.getStock()-cantidad);
+    //	pr.modificar(produ);
+    //	System.out.println(algo);
+    	System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    	System.out.println(cantidad);
+    	cantidad=0;
+    	
+     }
+    
+    /****************************CARGAR PRODUCTOS***************************************************/
 
+    public void cargarProductos(ActionEvent event){
+    	
+    	listaProductos = productoManager.listAllProductos();			
+    }
+    
     /*****************************Eliminar***********************************************/
     @DELETE
     @Path("eliminar/{id:[0-9][0-9]*}")
@@ -168,20 +240,17 @@ public class Venta_CabResourceRESTService {
   //@Consumes(MediaType.APPLICATION_JSON)
   //  @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public String cargaMasiva() throws IOException {
-    	try{
-    		return registration.cargaMasiva("/home/viviana/jsf-primefaces/ventas.txt");
-    	}
-    	catch(EJBTransactionRolledbackException e)
-        {
-                
-                    System.out.println("CANTIDAD NEGATIVA!!!!");
-                    return "Hubo un error";
-
-                
-
-        }		
+    
+    public void cargaMasiva() throws IOException {
     	
+    	mensaje=registration.cargaMasiva("/home/shaka/pfff/jsf-primefaces/ventas.txt");
+    	System.out.println(mensaje);
+    	System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    	FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, mensaje, "PrimeFaces Rocks."));
+    	
+    	//return mensaje;
+    	
+        
     }
     
     /**
@@ -231,40 +300,5 @@ public class Venta_CabResourceRESTService {
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
     
-    
-  //////////////////////////////////////////////////////////
-  //Filtrado
-  //////////////////////////////////////////////////////////
-  @GET
-  @Path("/filtrar/{param}")
-  public Response filtrar(@PathParam("param") String content){
-      Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-      //Gson gson = new Gson();
-      Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-      FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-      ventas = registration.filtrar(filtros);
-      Gson objetoGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd").create();
-      if (this.ventas.isEmpty()) {
-          return Response
-                  .status(200)
-                  .entity("[]").build();
-      } else {
-          return Response
-                  .status(200)
-                  .entity(objetoGson.toJson(ventas)).build();
-      }
-  }
-  
-  @GET
-  @Path("/filtrarCantidad/{param}")
-  public int filtrarCantidadRegistros(@PathParam("param") String content){
-      Type tipoFiltros = new TypeToken<FiltersObject>(){}.getType();
-      //Gson gson = new Gson();
-          Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-
-      FiltersObject filtros = gson.fromJson(content, tipoFiltros);
-      int cantidad = registration.filtrarCantidadRegistros(filtros);
-      return cantidad;
-  }
 
 }

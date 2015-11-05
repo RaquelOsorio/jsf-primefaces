@@ -6,61 +6,46 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui"
 	template="./default.xhtml">
+	<!-- esta ya esta todo  -->
 	<ui:define name="content">
-
 		<h2><center>Lista de Compras</center></h2>
 		<h:form>
-		<h:commandButton action="clientes" value="Crear" image="ui-icon-plusthick"/>
+		<h:commandButton action="crearCompra" value="Nueva Compra" title="Nueva Compra" />
+		<div align="right"><h:commandButton action="#{beancompra.cargaMasiva}" value="Carga Masiva"/>
+		</div>
 		</h:form>
-		<p></p>
-		
-<h:form id="form">
-            <p:dataTable id="tablaCompra" caseSensitiveSort="true"
-                         emptyMessage="Ningun elemento encontrado"
-                         selection="#{compra.compra}" selectionMode="single" 
-                rowsPerPageLabel="Filas" var="det" value="#{compra.lazyModel}" rows="10" paginator="true"
-                         
-                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="1,5,10" lazy="true">
-                <p:column headerText="Fecha" sortBy="#{det.fecha}">
-                    <h:outputText  value="#{det.fecha}" >
-                                    <f:convertDateTime pattern="dd-MM-yyyy" />
-                    </h:outputText>
-                </p:column>
-               
-                <p:column headerText="Proveedor" sortBy="#{det.proveedor.descripcion}" filterBy="#{det.proveedor.descripcion}">
-                    <h:outputText value="#{det.proveedor.descripcion}" />
-                </p:column>
-            <!--    <f:facet name="footer">
-             <p:commandButton process="tablaCompra" update=":mainForm:form:display" icon="ui-icon-search" value="Ver" oncomplete="PF('compraDialog').show()" />
-        </f:facet> -->
-            </p:dataTable>
-           <!-- <p:dialog closeOnEscape="true"   header="Detalles de la compra" widgetVar="compraDialog" resizable="true"  width="200"
-                      modal="true">  
-  
-        <p:outputPanel id="display" style="text-align:center;">
-            
-                <f:facet name="header">
-                     <h:outputText value="Compra" />
-                </f:facet>
+        <p:dataTable var="cli" value="#{beancompra.listAllCabeceras()}"
+        	caseSensitiveSort="true"
+                                 emptyMessage="Ningun elemento encontrado"
+
+                                 rowsPerPageLabel="Filas"   rows="10" paginator="true"
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1,5,10" >
  
-                <h:outputText value="Fecha:" />
-                <h:outputText value="#{compra.compra.fecha}" >
-                    <f:convertDateTime pattern="dd-MM-yyyy" />
-                </h:outputText>
-                <ui:repeat value="#{compra.compra.detalleCompraList}" var="det">
-                    <h:outputText value="#{det.producto.nombre} - #{det.cantidad}" style="display:block"/>
-            </ui:repeat>
-                 <h:outputText value="Total:" />
-                <h:outputText value="#{compra.compra.total}" />
-           
-        </p:outputPanel>
-    </p:dialog>   -->
-           <center>
-             <p:commandButton value="Exportar a CSV" 
-                              action="#{lazyComprasModel.exportarCSV}" image="ui-icon-document"/>
-           </center>
-        </h:form>
+    		<p:column headerText="Id" sortBy="#{cli.id}" filterBy="#{cli.id}">
+       			 <h:outputText value="#{cli.id}" />
+    		</p:column>
+ 
+    		<p:column headerText="Fecha" sortBy="#{cli.fecha}" filterBy="#{cli.fecha}">
+    			<p:commandLink  actionListener="#{beancompradet.listAllProductosByCabecera(cli.id,cli.proveedor.descripcion)}" action="detalleCompra">
+        			<h:outputText value="#{cli.fecha}" />
+    			</p:commandLink> 
+    		</p:column>
+ 
+    		<p:column headerText="Proveedor" sortBy="#{cli.proveedor.descripcion}" filterBy="#{cli.proveedor.descripcion}">
+        		<h:outputText value="#{cli.proveedor.descripcion}" />
+    		</p:column>
+   <!--   		<p:column headerText="Operacion">
+    			
+    			<p:commandButton action="#{cli.id}" value="Eliminar" image="ui-icon-trash"/>
+    			<p:commandButton action="#{cli.id}" value="Modificar" image="ui-icon-pencil"/>
+            </p:column>   -->
+            
+ 		</p:dataTable>
+ 				<p></p>
+    			
+
 
 	</ui:define>
 </ui:composition>

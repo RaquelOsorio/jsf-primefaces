@@ -10,7 +10,8 @@
 
 		<h2><center>Lista de Clientes</center></h2>
 		<h:form>
-		<h:commandButton action="crearCliente" value="Nuevo Cliente" title="Nuevo Cliente" />
+		<p:commandButton action="crearCliente" value="Nuevo Cliente" title="Nuevo Cliente" />
+		<div align="right"><h:commandButton action="#{beanclientes.cargaMasiva}" value="Carga Masiva" /></div>
 		</h:form>
 		<p></p>
 		
@@ -30,11 +31,12 @@
                         <p:column headerText="Apellido" sortBy="#{cli.apellido}" filterBy="#{cli.apellido}">
                             <h:outputText value="#{cli.apellido}"/>
                         </p:column>
-       
+                      
     			
-				 <p:column>
-                            <h:commandButton action="#{beanclientes.removeProvider(cli.id)}" value="Borrar" ></h:commandButton>
+				 <p:column> 
+                            <p:commandButton actionListener="#{beanclientes.removeProvider(cli.id)}" value="Borrar" update="tabla"/>
                             <p:commandButton actionListener="#{beanclientes.obtenerCliente(cli.id)}" value="Modificar" image="ui-icon-pencil" action="modificarCliente"/>
+                 			
                  </p:column>
     			
     			<!-- <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
@@ -43,7 +45,10 @@
     			</p:confirmDialog> -->
     	
                         
+						
+					
                     </p:dataTable>
+                    
                     
                     <center>
                         <p:commandButton value="Exportar a CSV" 
