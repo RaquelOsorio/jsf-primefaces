@@ -2,22 +2,10 @@
     <wb-module deploy-name="EjbJaxRS-ear">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/ear-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/application" tag="defaultRootSource"/>
-        <dependent-module archiveName="EjbJaxRS-web.war" deploy-path="/" handle="module:/resource/EjbJaxRS-web/EjbJaxRS-web">
+        <dependent-module archiveName="EjbJaxRS-web.war" deploy-path="/" handle="module:/classpath/var/M2_REPO/py/pol/una/ii/pw/EjbJaxRS-web/1.0-SNAPSHOT/EjbJaxRS-web-1.0-SNAPSHOT.war">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="EjbJaxRS-ejb.jar" deploy-path="/" handle="module:/resource/EjbJaxRS-ejb/EjbJaxRS-ejb">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="gson.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="commons-fileupload.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="commons-lang.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="primefaces.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/primefaces/primefaces/5.3/primefaces-5.3.jar">
+        <dependent-module archiveName="EjbJaxRS-ejb.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/py/pol/una/ii/pw/EjbJaxRS-ejb/1.0-SNAPSHOT/EjbJaxRS-ejb-1.0-SNAPSHOT.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>
