@@ -8,24 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
@@ -64,10 +46,10 @@ import py.pol.una.ii.pw.service.FiltersObject;
 //import javax.ejb.EJBTransactionRolledbackException;
 import py.pol.una.ii.pw.service.Venta_CabRegistration;
 
-//@ManagedBean(name="beanventas")
-//@ViewScoped
-@Path("/ventas")
-@RequestScoped
+@Path("ventas")
+@ManagedBean(name="beanventas")
+@ViewScoped
+
 public class Venta_CabResourceRESTService {
 
 	@PersistenceContext(unitName="PersistenceApp") 

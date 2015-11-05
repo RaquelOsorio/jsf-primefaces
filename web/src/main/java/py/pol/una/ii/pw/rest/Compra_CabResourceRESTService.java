@@ -89,7 +89,7 @@ public class Compra_CabResourceRESTService {
     private List<Compra_Cab> compras;
 
     List <Compra_Det> listadetalle;
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Compra_Cab> listAllCabeceras() {

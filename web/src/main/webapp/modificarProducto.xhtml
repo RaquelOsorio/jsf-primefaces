@@ -1,0 +1,27 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="./default.xhtml">
+	<ui:define name="content">
+ 		<h1> Modificar Producto</h1>
+   <h:form>
+   		<p>Detalle</p>
+   		<p><h:inputText value="#{beanproductos.detalle}"/></p>
+   		<p>Precio</p>
+   		<p><h:inputText value="#{beanproductos.precio}"/></p>
+     		<p>Proveedor</p>
+   		<h:selectOneMenu value="#{beanproductos.identi}" >
+   				<f:selectItem itemValue="#{beanproductos.proveedor.id}" itemLabel="#{beanproductos.proveedor.descripcion}" />
+    			<f:selectItems value="#{beanproductos.proveedores}" var="prov" itemValue="#{prov.id}" itemLabel="#{prov.descripcion}"/>
+		</h:selectOneMenu>   
+		<p></p>
+   		<p:commandButton value="Guardar" actionListener='#{beanproductos.modificarProducto}' action='productosList'/>
+   		<p:link outcome="productosList" value="Cancelar"/>
+   </h:form>
+        
+
+	</ui:define>
+</ui:composition>

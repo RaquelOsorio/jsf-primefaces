@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -50,12 +52,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.faces.event.ActionEvent;
+import javax.faces.bean.ManagedBean;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import py.pol.una.ii.pw.controller.ProveedorLazyList;
 import py.pol.una.ii.pw.data.ProveedorRepository;
 import py.pol.una.ii.pw.model.Compra_Det;
 import py.pol.una.ii.pw.model.Page;
@@ -63,13 +72,21 @@ import py.pol.una.ii.pw.model.Proveedor;
 import py.pol.una.ii.pw.service.FiltersObject;
 import py.pol.una.ii.pw.service.ProveedorRegistration;
 
+import javax.faces.bean.ApplicationScoped;
+
+import org.primefaces.model.LazyDataModel;
+
+import java.util.Iterator;
+import com.csvreader.CsvWriter;
+
 /**
  * JAX-RS Example
  * <p/>
  * This class produces a RESTful service to read/write the contents of the productos table.
  */
+@ManagedBean(name="beanproveedores")
 @Path("/proveedores")
-@RequestScoped
+@ApplicationScoped
 public class ProveedorResourceRESTService {
     
 	@PersistenceContext(unitName="PersistenceApp")
@@ -89,6 +106,37 @@ public class ProveedorResourceRESTService {
     ProveedorRegistration registration;
     
     static List<Proveedor> proveedores;
+    
+    LazyDataModel<Proveedor> lazyModel ;
+    
+    public LazyDataModel<Proveedor> getLazyModel() {
+        return lazyModel;
+    }
+
+    public void setLazyModel(LazyDataModel<Proveedor> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
+
+    
+    private String descripcion;
+
+    public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+	private long identificador;
+    
+	public long getIdentificador() {
+		return identificador;
+	}
+
+	public void setIdentificador(long identificador) {
+		this.identificador = identificador;
+	}
+    
+    
     
     /*********************Listado ascendente*****************************************************/
     @GET
@@ -128,11 +176,12 @@ public class ProveedorResourceRESTService {
     @Path("/crear/{descripcion}")
     
     ////////////////funciona cuando no hay registros de proveedores 
-    public Response createProveedor(@PathParam("descripcion")String des) {
+    public Response createProveedor(ActionEvent event) {
     	
     	Proveedor proveedor;
     	proveedor= new Proveedor();
-    	proveedor.setDescripcion(des);
+    	proveedor.setDescripcion(descripcion);
+    	descripcion="";
     	//proveedor.setId(n);
         Response.ResponseBuilder builder = null;
 
@@ -175,10 +224,17 @@ public class ProveedorResourceRESTService {
      //@Consumes(MediaType.APPLICATION_JSON)
      @Produces(MediaType.APPLICATION_JSON)
      @Path("/modificar/{id}/{des}")
-     
-    public Response modificarProveedor(@PathParam("id")Long id,@PathParam("des")String des) {
+    
+    public void obtenerProveedor(Long id){
     	Proveedor proveedor= buscar(id);
-    	proveedor.setDescripcion(des);
+    	identificador = id;
+    	descripcion = proveedor.getDescripcion();
+    }
+     
+    public Response modificarProveedor(ActionEvent event) {
+    	Proveedor proveedor= buscar(identificador);
+    	proveedor.setDescripcion(descripcion);
+    	descripcion="";
     	//proveedor.setId(n);
         Response.ResponseBuilder builder = null;
 
@@ -269,6 +325,77 @@ public class ProveedorResourceRESTService {
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
+    
+   /*************************Exportar Cliente***************************************************/
+    
+    public void exportarCSV() throws MalformedURLException, IOException
+    {
+    	
+
+        String outputFile = "/home/sonia/Desktop/ArchivoProveedor.csv";
+        boolean alreadyExists = new File(outputFile).exists();
+         
+        if(alreadyExists){
+            File ArchivoClientes = new File(outputFile);
+            ArchivoClientes.delete();
+        }        
+         
+        try {
+ 
+            CsvWriter csvOutput = new CsvWriter(new FileWriter(outputFile, true), ',');
+             
+            
+            csvOutput.write("Descripcion");
+           
+            csvOutput.endRecord();
+ 
+            System.out.println("\nENTRO EN EXPORTAR???");
+            
+            Iterator<Proveedor> ite=null;
+            ite=proveedores.iterator();
+            while(ite.hasNext()){
+              Proveedor emp=ite.next(); 	
+                csvOutput.write(emp.getDescripcion());
+                
+                csvOutput.endRecord();                   
+            }
+             
+            csvOutput.close();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+//    	ClienteRegistration cr;
+//    	List<Clientes> lista;
+//    	String stringFiltros="";
+//    	Map<String,Object> filtros = getFiltrado();
+//    	String requestString = "http://localhost:8080/EjbJaxRS-web/rest/clientes";
+//    	String nombre=(String) filtros.get("nombre");
+//		System.out.println(nombre);
+//		String apellido=(String) filtros.get("apellido");
+//		System.out.println(apellido);
+//		
+//		if(nombre!=null || apellido!=null)
+//			requestString+="?";
+//		if (nombre !=null) {
+//			requestString+="nombre="+nombre;
+//			if(apellido!=null)
+//				requestString+="&";
+//		}
+//		if (apellido !=null) {
+//			requestString+="apellidos="+apellido;
+//		}
+//		System.out.println("esto imprime" + getFiltrado());
+//		System.out.println("esto es requeststring" + requestString);
+//		FacesContext context = FacesContext.getCurrentInstance();  
+//		try {  
+//			context.getExternalContext().redirect(requestString);  
+//		}catch (Exception e) {  
+//			e.printStackTrace();  
+//		}  
+    }
+    
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -349,7 +476,11 @@ public class ProveedorResourceRESTService {
     }
     
     
-    
+    @PostConstruct
+    public void init(){
+        lazyModel = new ProveedorLazyList();
+        lazyModel.setRowCount(lazyModel.getRowCount());   
+    }
     /**
      * Checks if a member with the same email address is already registered. This is the only way to easily capture the
      * "@UniqueConstraint(columnNames = "email")" constraint from the Member class.
